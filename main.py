@@ -1,6 +1,7 @@
 import requests
 from getpass import getpass
 from bs4 import BeautifulSoup
+import json
 
 
 class Connection:
@@ -39,7 +40,9 @@ class Connection:
         self.response = requests.get(link)
         if self.response.status_code == 200:
             self.stats = self.response.json()
-            print(self.stats)
+            self.stats = json.loads(self.stats)
+            for i in self.stats:
+                print(i['fields']['username'],i['fields']['best_score'])
         else:
             print(f'Error {self.response.status_code} pleas contact to administrator https://github.com/0lch4')
 
