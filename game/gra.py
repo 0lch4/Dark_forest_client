@@ -522,6 +522,8 @@ def deadscreen():
         f'You survived: {level} levels', True, (255, 0, 0))
     window.blit(points_text, (window_width/4 - 80, window_height/4))
     stats()
+    Connection.update_best_score()
+    Connection.update_stats()
     pygame.display.update()
     #when player press space stop showing scores and go into menu
     while waiting:
