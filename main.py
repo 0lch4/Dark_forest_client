@@ -74,17 +74,17 @@ class Connection:
             self.stats = json.loads(self.stats)
             for i in self.stats:
                 print(
-                    i['fields']['username'],
-                    i['fields']['all_levels'],
-                    i['fields']['all_gold'],
-                    i['fields']['enemies_killed'],
-                    i['fields']['destroyed_obstacles'],
-                    i['fields']['bosses_killed'],
-                    i['fields']['devils_killed'],
-                    i['fields']['fasts_killed'],
-                    i['fields']['mutants_killed'],
-                    i['fields']['ghosts_killed'],
-                    )
+                    f"Username: {i['fields']['username']}",
+                    f"All Levels: {i['fields']['all_levels']}",
+                    f"All Gold: {i['fields']['all_gold']}",
+                    f"Enemies Killed: {i['fields']['enemies_killed']}",
+                    f"Destroyed Obstacles: {i['fields']['destroyed_obstacles']}",
+                    f"Bosses Killed: {i['fields']['bosses_killed']}",
+                    f"Devils Killed: {i['fields']['devils_killed']}",
+                    f"Fasts Killed: {i['fields']['fasts_killed']}",
+                    f"Mutants Killed: {i['fields']['mutants_killed']}",
+                    f"Ghosts Killed: {i['fields']['ghosts_killed']}",
+                )
         else:
             print(f'Error {self.response.status_code} pleas contact to administrator https://github.com/0lch4')
 
@@ -122,9 +122,9 @@ def main():
     #show global best scores
     ##acc.show_best_score(links[3])
     #update user's stats
-    acc.update_stats(links[4],texts[3])
+    #acc.update_stats(links[4],texts[3])
     #show global stats
-    ##acc.show_stats(links[5])
+    acc.show_stats(links[5])
     
 
 if __name__ == '__main__':
