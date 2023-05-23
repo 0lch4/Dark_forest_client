@@ -4,7 +4,17 @@ import time
 import sys
 import math
 import json
+sys.path.append('../Dark_forest_client')
+from server_connection_logic import Connection
 
+#verify player
+try:
+    username = sys.argv[1]
+    password = sys.argv[2]
+except IndexError:
+    quit()
+    
+verification = Connection(username,password)
 # initiation pygame
 pygame.init()
 #mouse disable
@@ -522,8 +532,8 @@ def deadscreen():
         f'You survived: {level} levels', True, (255, 0, 0))
     window.blit(points_text, (window_width/4 - 80, window_height/4))
     stats()
-    Connection.update_best_score()
-    Connection.update_stats()
+    verification.update_best_score()
+    verification.update_stats()
     pygame.display.update()
     #when player press space stop showing scores and go into menu
     while waiting:
@@ -1175,7 +1185,7 @@ def stats():
     with open('game/stats.json','r',encoding='utf-8') as f:
         old_stats=json.load(f)
     new_stats = {
-        "all_levels":level+old_stats['all_level'],
+        "all_levels":level+old_stats['all_levels'],
         "all_gold":points_counter+old_stats['all_gold'],
         "enemies_killed":enemies_killed+old_stats['enemies_killed'],
         "destroyed_obstacles":destroyed_obstacles+old_stats['destroyed_obstacles'],
@@ -1678,3 +1688,5 @@ while run:
 
     #update the screen
     pygame.display.update()
+
+    

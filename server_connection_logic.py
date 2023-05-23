@@ -51,15 +51,21 @@ class Connection:
         else:
             print(f'Error {self.response.status_code} pleas contact to administrator https://github.com/0lch4')
         
-    def show_best_score(self,link):
+    def show_best_score(self):
+        link='http://127.0.0.1:8000/stats/show_best_score'
         self.response = requests.get(link)
         if self.response.status_code == 200:
             self.stats = self.response.json()
             self.stats = json.loads(self.stats)
+            output=''
             for i in self.stats:
-                print(i['fields']['username'],i['fields']['best_score'])
+                output+=(
+                    f"{i['fields']['username']}: "
+                    F"{i['fields']['best_score']}\n"
+                )
+            return output
         else:
-            print(f'Error {self.response.status_code} pleas contact to administrator https://github.com/0lch4')
+            return f'Error {self.response.status_code} pleas contact to administrator https://github.com/0lch4'
     
     def update_stats(self):
         link ='http://127.0.0.1:8000/stats/modify_stats'
@@ -80,7 +86,7 @@ class Connection:
         if self.response.status_code == 200:
             pass
         else:
-            print(f'Error {self.response.status_code} pleas contact to administrator https://github.com/0lch4')
+            return f'Error {self.response.status_code} pleas contact to administrator https://github.com/0lch4'
         
     def show_stats(self):
         link='http://127.0.0.1:8000/stats/show_stats'
@@ -88,21 +94,24 @@ class Connection:
         if self.response.status_code == 200:
             self.stats = self.response.json()
             self.stats = json.loads(self.stats)
+            output = ''
             for i in self.stats:
-                print(
-                    f"Username: {i['fields']['username']}",
-                    f"All Levels: {i['fields']['all_levels']}",
-                    f"All Gold: {i['fields']['all_gold']}",
-                    f"Enemies Killed: {i['fields']['enemies_killed']}",
-                    f"Destroyed Obstacles: {i['fields']['destroyed_obstacles']}",
-                    f"Bosses Killed: {i['fields']['bosses_killed']}",
-                    f"Devils Killed: {i['fields']['devils_killed']}",
-                    f"Fasts Killed: {i['fields']['fasts_killed']}",
-                    f"Mutants Killed: {i['fields']['mutants_killed']}",
-                    f"Ghosts Killed: {i['fields']['ghosts_killed']}",
-                )
+                output += (
+                            f"Username: {i['fields']['username']}\n"
+                            f"Levels Compleat: {i['fields']['all_levels']}\n"
+                            f"Golds Earned: {i['fields']['all_gold']}\n"
+                            f"Enemies Killed: {i['fields']['enemies_killed']}\n"
+                            f"Destroyed Obstacles: {i['fields']['destroyed_obstacles']}\n"
+                            f"Bosses Killed: {i['fields']['bosses_killed']}\n"
+                            f"Devils Killed: {i['fields']['devils_killed']}\n"
+                            f"Fasts Killed: {i['fields']['fasts_killed']}\n"
+                            f"Mutants Killed: {i['fields']['mutants_killed']}\n"
+                            f"Ghosts Killed: {i['fields']['ghosts_killed']}\n\n"
+                        )
+
+            return output
         else:
-            print(f'Error {self.response.status_code} pleas contact to administrator https://github.com/0lch4')
+            return f'Error {self.response.status_code} pleas contact to administrator https://github.com/0lch4'
 
 def load_stats():
     with open('game/stats.json','r') as f:
