@@ -83,8 +83,7 @@ def start():
         elif check == 'Bad username or password':
             messagebox.showerror('Error', check)
         else:
-            messagebox.showerror('Unexpected error',check)
-            
+            messagebox.showerror('Unexpected error', check)
 
     label = tk.Label(entry, text="Enter your username:")
     label.pack()
