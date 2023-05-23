@@ -1,6 +1,6 @@
 {
-    "level": 8,
-    "points_counter": 6,
+    "all_levels": 10,
+    "all_gold": 7,
     "enemies_killed": 4,
     "destroyed_obstacles": 8,
     "bosses_killed": 1,

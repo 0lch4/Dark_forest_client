@@ -1173,8 +1173,8 @@ def stats():
     with open('game/stats.json','r',encoding='utf-8') as f:
         old_stats=json.load(f)
     new_stats = {
-        "all_levels":level+old_stats['level'],
-        "all_gold":points_counter+old_stats['points_counter'],
+        "all_levels":level+old_stats['all_level'],
+        "all_gold":points_counter+old_stats['all_gold'],
         "enemies_killed":enemies_killed+old_stats['enemies_killed'],
         "destroyed_obstacles":destroyed_obstacles+old_stats['destroyed_obstacles'],
         "bosses_killed":bosses_killed+old_stats['bosses_killed'],
