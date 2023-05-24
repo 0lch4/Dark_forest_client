@@ -50,7 +50,7 @@ window_height = 1080
 window = pygame.display.set_mode((window_width, window_height))
 #font in the game
 font = pygame.font.Font(None, 36)
-#start player position 
+#start player position
 x = 0
 y = 0
 #gold

@@ -158,7 +158,7 @@ class Connection:
                     }
                     break
                 else:
-                    #if user was created program use this
+                    #if user was created program use this 
                     data_stats = {
                         'all_levels': 0,
                         'all_gold': 0,
