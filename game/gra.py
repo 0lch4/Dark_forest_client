@@ -4,6 +4,7 @@ import time
 import sys
 import math
 import json
+import os
 sys.path.append('../Dark_forest_client')
 from server_connection_logic import Connection
 
@@ -13,8 +14,30 @@ try:
     password = sys.argv[2]
 except IndexError:
     quit()
-    
+
 verification = Connection(username,password)
+
+#stats file are created separately for each user
+folder_path = os.path.join(os.getcwd(), "game/stats", username)
+os.makedirs(folder_path, exist_ok=True)
+stats_file_path = os.path.join(folder_path, "stats.json")
+
+if not os.path.exists(stats_file_path):
+    initial_data = {
+        "all_levels": 0,
+        "all_gold": 0,
+        "enemies_killed": 0,
+        "destroyed_obstacles": 0,
+        "bosses_killed": 0,
+        "devils_killed": 0,
+        "fasts_killed": 0,
+        "mutants_killed": 0,
+        "ghosts_killed": 0,
+        "best_score": 0
+    }
+    with open(stats_file_path, 'w') as stats_file:
+        json.dump(initial_data, stats_file, indent=4)
+
 # initiation pygame
 pygame.init()
 #mouse disable
@@ -514,7 +537,7 @@ def deadscreen():
     window.blit(dead_screen, (0, 0))
     dead_screen_font = pygame.font.Font('game/font/snap.ttf', 100)
     #show best score
-    with open('game/stats.json', 'r') as f:
+    with open(f'game/stats/{username}/stats.json', 'r') as f:
         data = json.load(f)
         best_score= data['best_score']
     #update best score if you have more points and show best score on sreen
@@ -532,8 +555,8 @@ def deadscreen():
         f'You survived: {level} levels', True, (255, 0, 0))
     window.blit(points_text, (window_width/4 - 80, window_height/4))
     stats()
-    verification.update_best_score()
-    verification.update_stats()
+    verification.update_best_score(username)
+    verification.update_stats(username)
     pygame.display.update()
     #when player press space stop showing scores and go into menu
     while waiting:
@@ -611,8 +634,8 @@ def collision(lista,rect,x,y):
                     collision = True
                     break
             if collision:
-                x = random.randint(0,window_width-90)
-                y = random.randint(0,window_height-150)
+                x = random.randint(100,window_width-100)
+                y = random.randint(100,window_height-150)
         return x,y
                 
 #loading objects in the map:enemies,obstacles,corpses etc
@@ -631,8 +654,8 @@ def load(quantity, objectt, lista, rect):
             y = random.randint(20, window_height-150)
             
         if lista == enemy_list:
-            x = random.randint(50, window_width-50)
-            y = random.randint(50, window_height-50)
+            x = random.randint(100, window_width-100)
+            y = random.randint(100, window_height-100)
         
         #in boss level are no obstacles and number of enemies are static                
         if background != background4:
@@ -640,8 +663,8 @@ def load(quantity, objectt, lista, rect):
             objectt(x, y)
         else:
             #additional security for crash if no enemies in this moment 
-            x = random.randint(80, window_width-80)
-            y = random.randint(80, window_height-80)
+            x = random.randint(100, window_width-100)
+            y = random.randint(100, window_height-100)
             x,y = collision(lista,rect,x,y)    
             objectt(x, y)
 
@@ -1182,7 +1205,7 @@ def stats():
     global fasts_killed
     global mutants_killed
     global ghosts_killed
-    with open('game/stats.json','r',encoding='utf-8') as f:
+    with open(f'game/stats/{username}/stats.json','r',encoding='utf-8') as f:
         old_stats=json.load(f)
     new_stats = {
         "all_levels":level+old_stats['all_levels'],
@@ -1196,7 +1219,7 @@ def stats():
         "ghosts_killed":ghosts_killed+old_stats['ghosts_killed'],
         "best_score":best_score,
     }
-    with open('game/stats.json','w', encoding='utf-8') as f:
+    with open(f'game/stats/{username}/stats.json','w', encoding='utf-8') as f:
         json.dump(new_stats,f,indent=4)
         
 

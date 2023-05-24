@@ -1,24 +1,28 @@
 import requests
-from getpass import getpass
 from bs4 import BeautifulSoup
 import json
 
+#user have to be always log in if he want connecct to the server
 class Connection:
     def __init__(self,username,password):
         self.username = username
         self.password = password
-        
+    #login or register in server, only links was changed    
     def conn(self,link):
         self.session = requests.session()
         self.response=self.session.get(link)
         soup = BeautifulSoup(self.response.content, 'html.parser')
+        #additional security when logging in
         self.csrf_token = soup.find('input', attrs={'name': 'csrfmiddlewaretoken'})['value']
         self.data = {
         'csrfmiddlewaretoken': self.csrf_token,
         'username': self.username,
         'password': self.password,
         }
+        #send data to server
         self.response = self.session.post(link, data=self.data)
+        
+        #i excpect some login errors and return values for them
         if link.endswith('login'):
             if self.response.status_code == 200 and self.response.url.endswith('login_success'):
                 return 'success'
@@ -26,9 +30,10 @@ class Connection:
                 if self.response.status_code == 200:
                     return 'Bad username or password'
                 else:
+                    #for unexpected errors
                     return f'Error {self.response.status_code} pleas contact to administrator https://github.com/0lch4'
 
-                
+        #i excpect some register errors and return values for them        
         if link.endswith('create_user'):
             if self.response.status_code == 200 and self.response.url.endswith('register_success'):
                 return 'success'
@@ -36,11 +41,14 @@ class Connection:
                 if self.response.status_code == 200:
                     return 'User exsist'
                 else:
+                    #for unexpected errors
                     return f'Error {self.response.status_code} pleas contact to administrator https://github.com/0lch4'
-    
-    def update_best_score(self):
+                
+    #send new player best score to server
+    def update_best_score(self,username):
         link = 'http://127.0.0.1:8000/stats/modify_best_score'
-        new_best_score=load_stats()
+        #score was reading from json file
+        new_best_score=load_stats(username)
         self.data = {
         'username': self.username,
         'best_score': new_best_score['best_score'],
@@ -50,7 +58,8 @@ class Connection:
             pass
         else:
             print(f'Error {self.response.status_code} pleas contact to administrator https://github.com/0lch4')
-        
+    
+    #show global best scores    
     def show_best_score(self):
         link='http://127.0.0.1:8000/stats/show_best_score'
         self.response = requests.get(link)
@@ -58,6 +67,7 @@ class Connection:
             self.stats = self.response.json()
             self.stats = json.loads(self.stats)
             output=''
+            #return data to main app
             for i in self.stats:
                 output+=(
                     f"{i['fields']['username']}: "
@@ -66,10 +76,12 @@ class Connection:
             return output
         else:
             return f'Error {self.response.status_code} pleas contact to administrator https://github.com/0lch4'
-    
-    def update_stats(self):
+        
+    #send new player statse to server 
+    def update_stats(self,username):
         link ='http://127.0.0.1:8000/stats/modify_stats'
-        new_stats = load_stats()
+        #stats was reading from json file
+        new_stats = load_stats(username)
         self.data = {
         'username': self.username,
         'all_levels': new_stats['all_levels'],
@@ -88,6 +100,7 @@ class Connection:
         else:
             return f'Error {self.response.status_code} pleas contact to administrator https://github.com/0lch4'
         
+    #show global stats            
     def show_stats(self):
         link='http://127.0.0.1:8000/stats/show_stats'
         self.response = requests.get(link)
@@ -95,6 +108,7 @@ class Connection:
             self.stats = self.response.json()
             self.stats = json.loads(self.stats)
             output = ''
+            #return data to main app
             for i in self.stats:
                 output += (
                             f"Username: {i['fields']['username']}\n"
@@ -113,40 +127,8 @@ class Connection:
         else:
             return f'Error {self.response.status_code} pleas contact to administrator https://github.com/0lch4'
 
-def load_stats():
-    with open('game/stats.json','r') as f:
+#load data from json file
+def load_stats(username):
+    with open(f'game/stats/{username}/stats.json','r') as f:
         new_stats = json.load(f)
     return new_stats
-
-texts=[
-    'Account created successfully',
-    'You succesfully logged in',
-    'Best score has been updated',
-    'Stats has been updated',
-]
-
-links=[
-    'http://127.0.0.1:8000/stats/create_user',
-    'http://127.0.0.1:8000/stats/login',
-]
-
-def main():
-    username = input('Type your username: ')
-    password = getpass('Type your password: ')
-    acc = Connection(username,password)
-    #create user
-    acc.conn(links[0])
-    #login user
-    #acc.conn(links[1],texts[1])
-    #update user's best score
-    #acc.update_best_score(links[2],texts[2])
-    #show global best scores
-    #acc.show_best_score(links[3])
-    #update user's stats
-    #acc.update_stats(links[4],texts[3])
-    #show global stats
-    #acc.show_stats(links[5])
-    
-
-if __name__ == '__main__':
-    main()

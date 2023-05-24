@@ -3,6 +3,17 @@ from tkinter import messagebox
 import server_connection_logic
 import subprocess
 from tkinter import ttk, font
+import pygame
+
+#playin background music
+def play_background_music():
+    pygame.mixer.music.load("client_sounds/darkforest_client.mp3")
+    pygame.mixer.music.play(-1)
+#stop music    
+def stop_background_music():
+    pygame.mixer.music.stop()
+#initialize mixer
+pygame.mixer.init()
 
 #login/create acc links
 links = [
@@ -114,6 +125,8 @@ def start():
     entry.title("Dark_forest_client")
     entry.geometry("400x400")
     entry.resizable(False, False)
+    #background music
+    play_background_music()
     #font, if you have error here pleas install font from game/font/Snap.ttf
     dark_forest_font = font.Font(family="Snap ITC", size=18)
     #load background image into window
@@ -180,6 +193,7 @@ def start():
 
 #launch the game
 def play(username, password):
+    stop_background_music()
     subprocess.run(['python', 'game/gra.py', username, password])
 
 if __name__ == '__main__':
