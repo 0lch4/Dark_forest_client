@@ -37,6 +37,8 @@ if not os.path.exists(stats_file_path):
     }
     with open(stats_file_path, 'w') as stats_file:
         json.dump(initial_data, stats_file, indent=4)
+        
+verification.load_data_to_local()
 
 # initiation pygame
 pygame.init()

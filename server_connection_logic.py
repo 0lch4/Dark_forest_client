@@ -61,21 +61,22 @@ class Connection:
     
     #show global best scores    
     def show_best_score(self):
-        link='http://127.0.0.1:8000/stats/show_best_score'
+        link = 'http://127.0.0.1:8000/stats/show_best_score'
         self.response = requests.get(link)
+        
         if self.response.status_code == 200:
             self.stats = self.response.json()
             self.stats = json.loads(self.stats)
-            output=''
+            #Sort by best score
+            sorted_stats = sorted(self.stats, key=lambda x: x['fields']['best_score'], reverse=True)
+            output = ''
             #return data to main app
-            for i in self.stats:
-                output+=(
-                    f"{i['fields']['username']}: "
-                    F"{i['fields']['best_score']}\n"
-                )
+            for i in sorted_stats:
+                output += f"{i['fields']['username']}: {i['fields']['best_score']}\n"
+            
             return output
         else:
-            return f'Error {self.response.status_code} pleas contact to administrator https://github.com/0lch4'
+            return f'Error {self.response.status_code}, please contact the administrator at https://github.com/0lch4'
         
     #send new player statse to server 
     def update_stats(self,username):
@@ -126,6 +127,69 @@ class Connection:
             return output
         else:
             return f'Error {self.response.status_code} pleas contact to administrator https://github.com/0lch4'
+    
+    #load user data from server to local    
+    def load_data_to_local(self):
+        #links with user stats and best score
+        score_link = 'http://127.0.0.1:8000/stats/show_best_score'
+        stats_link = 'http://127.0.0.1:8000/stats/show_stats'
+        self.response_score = requests.get(score_link)
+        self.response_stats = requests.get(stats_link)
+
+        data_stats = {}
+        data_score = {}
+
+        if self.response_stats.status_code == 200:
+            self.stats = self.response_stats.json()
+            self.stats = json.loads(self.stats)
+            #import stats data from server
+            for entry in self.stats:
+                if entry['fields']['username'] == self.username:
+                    data_stats = {
+                        'all_levels': entry['fields']['all_levels'],
+                        'all_gold': entry['fields']['all_gold'],
+                        'enemies_killed': entry['fields']['enemies_killed'],
+                        'destroyed_obstacles': entry['fields']['destroyed_obstacles'],
+                        'bosses_killed': entry['fields']['bosses_killed'],
+                        'devils_killed': entry['fields']['devils_killed'],
+                        'fasts_killed': entry['fields']['fasts_killed'],
+                        'mutants_killed': entry['fields']['mutants_killed'],
+                        'ghosts_killed': entry['fields']['ghosts_killed'],
+                    }
+                    break
+                else:
+                    #if user was created program use this
+                    data_stats = {
+                        'all_levels': 0,
+                        'all_gold': 0,
+                        'enemies_killed': 0,
+                        'destroyed_obstacles': 0,
+                        'bosses_killed': 0,
+                        'devils_killed': 0,
+                        'fasts_killed': 0,
+                        'mutants_killed': 0,
+                        'ghosts_killed': 0,
+                    }
+        #same to best score
+        if self.response_score.status_code == 200:
+            self.score = self.response_score.json()
+            self.score = json.loads(self.score)
+
+            for entry in self.score:
+                if entry['fields']['username'] == self.username:
+                    data_score = {
+                        'best_score': entry['fields']['best_score'],
+                    }
+                    break
+                else:
+                    data_score={
+                        'best_score':0,
+                    }
+        #join two dicts
+        data_combined = { **data_score,**data_stats}
+        #save it
+        with open(f'game/stats/{self.username}/stats.json','w') as f:
+            json.dump(data_combined,f,indent=4)
 
 #load data from json file
 def load_stats(username):
