@@ -1,10 +1,12 @@
 # Dark-forest-client
 
-![GitHub forks](https://img.shields.io/badge/Version-1.0-red)
+![GitHub forks](https://img.shields.io/badge/Version-1.1-red)
 
 Client for Dark Forest game, integrate with Dark Forest server
 
 Now you can create account,login to account,show globals scores and stats.
+
+I host server in internet so now u can always use client to rivalize with other players
 
 Install libs: pip install -r requirements.txt
 
