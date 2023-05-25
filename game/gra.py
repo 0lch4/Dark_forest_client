@@ -543,7 +543,7 @@ def deadscreen():
         data = json.load(f)
         best_score= data['best_score']
     #update best score if you have more points and show best score on sreen
-    if level > best_score:
+    if level > int(best_score):
         best_score=level
         points2_text = dead_screen_font.render(
             f'Your record {level} levels', True, (255, 0, 0))
@@ -636,8 +636,12 @@ def collision(lista,rect,x,y):
                     collision = True
                     break
             if collision:
-                x = random.randint(100,window_width-100)
-                y = random.randint(100,window_height-150)
+                if lista==obstacles_list:
+                    x = random.randint(50,window_width-50)
+                    y = random.randint(50,window_height-50)
+                else:
+                    x = random.randint(100,window_width-100)
+                    y = random.randint(100,window_height-100)
         return x,y
                 
 #loading objects in the map:enemies,obstacles,corpses etc
@@ -652,8 +656,8 @@ def load(quantity, objectt, lista, rect):
                 x = random.randint(20, window_width-90)
                 y = random.randint(20, window_height-150)
         else:
-            x = random.randint(20, window_width-90)
-            y = random.randint(20, window_height-150)
+            x = random.randint(20, window_width-20)
+            y = random.randint(20, window_height-20)
             
         if lista == enemy_list:
             x = random.randint(100, window_width-100)
@@ -843,12 +847,9 @@ def obstacles():
     if background == background4:
         pass
     if background == background5:
-        load(number_obstacles-7, tree, obstacles_list, tree_rect)
         load(number_obstacles-6, deadtree, obstacles_list, dead_tree_rect)
         load(number_obstacles-3, bones, obstacles_list, bones_rect)
-        load(number_obstacles-3, sarna, obstacles_list, sarna_rect)
-        load(number_obstacles-5, bush, obstacles_list, bush_rect)
-        
+        load(number_obstacles-3, sarna, obstacles_list, sarna_rect)        
 
     return obstacles_list
 
@@ -1210,15 +1211,15 @@ def stats():
     with open(f'game/stats/{username}/stats.json','r',encoding='utf-8') as f:
         old_stats=json.load(f)
     new_stats = {
-        "all_levels":level+old_stats['all_levels'],
-        "all_gold":points_counter+old_stats['all_gold'],
-        "enemies_killed":enemies_killed+old_stats['enemies_killed'],
-        "destroyed_obstacles":destroyed_obstacles+old_stats['destroyed_obstacles'],
-        "bosses_killed":bosses_killed+old_stats['bosses_killed'],
-        "devils_killed":devils_killed+old_stats['devils_killed'],
-        "fasts_killed":fasts_killed+old_stats['fasts_killed'],
-        "mutants_killed":mutants_killed+old_stats['mutants_killed'],
-        "ghosts_killed":ghosts_killed+old_stats['ghosts_killed'],
+        "all_levels":level+int(old_stats['all_levels']),
+        "all_gold":points_counter+int(old_stats['all_gold']),
+        "enemies_killed":enemies_killed+int(old_stats['enemies_killed']),
+        "destroyed_obstacles":destroyed_obstacles+int(old_stats['destroyed_obstacles']),
+        "bosses_killed":bosses_killed+int(old_stats['bosses_killed']),
+        "devils_killed":devils_killed+int(old_stats['devils_killed']),
+        "fasts_killed":fasts_killed+int(old_stats['fasts_killed']),
+        "mutants_killed":mutants_killed+int(old_stats['mutants_killed']),
+        "ghosts_killed":ghosts_killed+int(old_stats['ghosts_killed']),
         "best_score":best_score,
     }
     with open(f'game/stats/{username}/stats.json','w', encoding='utf-8') as f:

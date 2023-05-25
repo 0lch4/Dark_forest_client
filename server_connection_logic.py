@@ -1,26 +1,40 @@
 import requests
-from bs4 import BeautifulSoup
 import json
 
+#default data for new accounts
+data_stats = {
+    'all_levels': 0,
+    'all_gold': 0,
+    'enemies_killed': 0,
+    'destroyed_obstacles': 0,
+    'bosses_killed': 0,
+    'devils_killed': 0,
+    'fasts_killed': 0,
+    'mutants_killed': 0,
+    'ghosts_killed': 0,
+                    }
 #user have to be always log in if he want connecct to the server
 class Connection:
     def __init__(self,username,password):
         self.username = username
         self.password = password
     #login or register in server, only links was changed    
-    def conn(self,link):
+    def conn(self, link):
         self.session = requests.session()
-        self.response=self.session.get(link)
-        soup = BeautifulSoup(self.response.content, 'html.parser')
-        #additional security when logging in
-        self.csrf_token = soup.find('input', attrs={'name': 'csrfmiddlewaretoken'})['value']
+        self.response = self.session.get(link)
+        
+        # Additional security when logging in
+        self.csrf_token = self.session.cookies.get('csrftoken')
+        
+        self.headers = {
+            'X-CSRFToken': self.csrf_token
+        }
         self.data = {
-        'csrfmiddlewaretoken': self.csrf_token,
-        'username': self.username,
-        'password': self.password,
+            'username': self.username,
+            'password': self.password
         }
         #send data to server
-        self.response = self.session.post(link, data=self.data)
+        self.response = self.session.post(link, data=self.data, headers=self.headers)
         
         #i excpect some login errors and return values for them
         if link.endswith('login'):
@@ -46,7 +60,7 @@ class Connection:
                 
     #send new player best score to server
     def update_best_score(self,username):
-        link = 'http://127.0.0.1:8000/stats/modify_best_score'
+        link = 'https://darkforest.pythonanywhere.com/stats/modify_best_score'
         #score was reading from json file
         new_best_score=load_stats(username)
         self.data = {
@@ -61,7 +75,7 @@ class Connection:
     
     #show global best scores    
     def show_best_score(self):
-        link = 'http://127.0.0.1:8000/stats/show_best_score'
+        link = 'https://darkforest.pythonanywhere.com/stats/show_best_score'
         self.response = requests.get(link)
         
         if self.response.status_code == 200:
@@ -80,7 +94,7 @@ class Connection:
         
     #send new player statse to server 
     def update_stats(self,username):
-        link ='http://127.0.0.1:8000/stats/modify_stats'
+        link ='https://darkforest.pythonanywhere.com/stats/modify_stats'
         #stats was reading from json file
         new_stats = load_stats(username)
         self.data = {
@@ -103,7 +117,7 @@ class Connection:
         
     #show global stats            
     def show_stats(self):
-        link='http://127.0.0.1:8000/stats/show_stats'
+        link='https://darkforest.pythonanywhere.com/stats/show_stats'
         self.response = requests.get(link)
         if self.response.status_code == 200:
             self.stats = self.response.json()
@@ -131,8 +145,8 @@ class Connection:
     #load user data from server to local    
     def load_data_to_local(self):
         #links with user stats and best score
-        score_link = 'http://127.0.0.1:8000/stats/show_best_score'
-        stats_link = 'http://127.0.0.1:8000/stats/show_stats'
+        score_link = 'https://darkforest.pythonanywhere.com/stats/show_best_score'
+        stats_link = 'https://darkforest.pythonanywhere.com/stats/show_stats'
         self.response_score = requests.get(score_link)
         self.response_stats = requests.get(stats_link)
 
@@ -156,7 +170,6 @@ class Connection:
                         'mutants_killed': entry['fields']['mutants_killed'],
                         'ghosts_killed': entry['fields']['ghosts_killed'],
                     }
-                    break
                 else:
                     #if user was created program use this 
                     data_stats = {
@@ -180,7 +193,6 @@ class Connection:
                     data_score = {
                         'best_score': entry['fields']['best_score'],
                     }
-                    break
                 else:
                     data_score={
                         'best_score':0,
