@@ -55,6 +55,7 @@ x = 0
 y = 0
 #gold
 points_counter = 0
+gold_counter = 0
 #level
 level = 0
 #number of enemies when game started
@@ -522,13 +523,6 @@ def deadscreen():
     global background
     global background1
     global gun_on
-    global enemies_killed
-    global destroyed_obstacles
-    global bosses_killed
-    global devils_killed
-    global fasts_killed
-    global mutants_killed
-    global ghosts_killed
     waiting = True
     w8 = True
     #load end of the game screen
@@ -596,13 +590,6 @@ def deadscreen():
                             gun_on = False
                             magazine = 0
                             w8 = False
-                            enemies_killed=0
-                            destroyed_obstacles=0
-                            bosses_killed=0
-                            devils_killed=0
-                            fasts_killed=0
-                            mutants_killed=0
-                            ghosts_killed=0
                             right.color = (255, 0, 0)
                             pygame.display.update()
                             break
@@ -1208,11 +1195,12 @@ def stats():
     global fasts_killed
     global mutants_killed
     global ghosts_killed
+    global gold_counter
     with open(f'game/stats/{username}/stats.json','r',encoding='utf-8') as f:
         old_stats=json.load(f)
     new_stats = {
         "all_levels":level+int(old_stats['all_levels']),
-        "all_gold":points_counter+int(old_stats['all_gold']),
+        "all_gold":gold_counter+int(old_stats['all_gold']),
         "enemies_killed":enemies_killed+int(old_stats['enemies_killed']),
         "destroyed_obstacles":destroyed_obstacles+int(old_stats['destroyed_obstacles']),
         "bosses_killed":bosses_killed+int(old_stats['bosses_killed']),
@@ -1224,6 +1212,15 @@ def stats():
     }
     with open(f'game/stats/{username}/stats.json','w', encoding='utf-8') as f:
         json.dump(new_stats,f,indent=4)
+        
+    enemies_killed=0
+    destroyed_obstacles=0
+    bosses_killed=0
+    devils_killed=0
+    fasts_killed=0
+    mutants_killed=0
+    ghosts_killed=0
+    gold_counter=0
         
 
 #load start od the game and play game music
@@ -1377,6 +1374,7 @@ while run:
         if player1_rect.colliderect(gold.rect):
             gold_sound.play()
             points_counter += 1
+            gold_counter += 1
             right.color = (0, 255, 0)
             gold_list.remove(gold)
     
