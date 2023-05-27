@@ -144,18 +144,6 @@ class Connection:
         if self.response_stats.status_code == 200:
             self.stats = self.response_stats.json()
             self.stats = json.loads(self.stats)
-            #default data for new accounts
-            data_stats = {
-                'all_levels': 0,
-                'all_gold': 0,
-                'enemies_killed': 0,
-                'destroyed_obstacles': 0,
-                'bosses_killed': 0,
-                'devils_killed': 0,
-                'fasts_killed': 0,
-                'mutants_killed': 0,
-                'ghosts_killed': 0,
-                                }
             #import stats data from server
             for entry in self.stats:
                 if entry['fields']['username'] == self.username:
@@ -170,6 +158,7 @@ class Connection:
                         'mutants_killed': entry['fields']['mutants_killed'],
                         'ghosts_killed': entry['fields']['ghosts_killed'],
                     }
+                    break
                 else:
                     #if user was created program use this 
                     data_stats = {
@@ -187,15 +176,12 @@ class Connection:
         if self.response_score.status_code == 200:
             self.score = self.response_score.json()
             self.score = json.loads(self.score)
-            #default data for new accounts
-            data_score={
-                'best_score': 0,
-            }
             for entry in self.score:
                 if entry['fields']['username'] == self.username:
                     data_score = {
                         'best_score': entry['fields']['best_score'],
                     }
+                    break
                 else:
                     data_score={
                         'best_score':0,
