@@ -194,7 +194,7 @@ def start():
 #launch the game
 def play(username, password):
     stop_background_music()
-    subprocess.run(['python', 'game/gra.py', username, password])
+    subprocess.run(['python', 'game/gra.py', username, password], creationflags=subprocess.CREATE_NO_WINDOW)
 
 if __name__ == '__main__':
     start()
