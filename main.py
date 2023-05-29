@@ -17,8 +17,8 @@ pygame.mixer.init()
 
 #login/create acc links
 links = [
-    'https://darkforest.pythonanywhere.com/stats/create_user',
-    'https://darkforest.pythonanywhere.com/stats/login',
+    'http://127.0.0.1:8000/stats/create_user',
+    'http://127.0.0.1:8000/stats/login',
 ]
 
 #main window for client

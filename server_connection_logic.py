@@ -48,7 +48,7 @@ class Connection:
                 
     #send new player best score to server
     def update_best_score(self,username):
-        link = 'https://darkforest.pythonanywhere.com/stats/modify_best_score'
+        link = 'http://127.0.0.1:8000/stats/modify_best_score'
         #score was reading from json file
         new_best_score=load_stats(username)
         self.data = {
@@ -63,7 +63,7 @@ class Connection:
     
     #show global best scores    
     def show_best_score(self):
-        link = 'https://darkforest.pythonanywhere.com/stats/show_best_score'
+        link = 'http://127.0.0.1:8000/stats/show_best_score'
         self.response = requests.get(link)
         
         if self.response.status_code == 200:
@@ -82,7 +82,7 @@ class Connection:
         
     #send new player statse to server 
     def update_stats(self,username):
-        link ='https://darkforest.pythonanywhere.com/stats/modify_stats'
+        link ='http://127.0.0.1:8000/stats/modify_stats'
         #stats was reading from json file
         new_stats = load_stats(username)
         self.data = {
@@ -105,7 +105,7 @@ class Connection:
         
     #show global stats            
     def show_stats(self):
-        link='https://darkforest.pythonanywhere.com/stats/show_stats'
+        link='http://127.0.0.1:8000/stats/show_stats'
         self.response = requests.get(link)
         if self.response.status_code == 200:
             self.stats = self.response.json()
@@ -133,8 +133,8 @@ class Connection:
     #load user data from server to local    
     def load_data_to_local(self):
         #links with user stats and best score
-        score_link = 'https://darkforest.pythonanywhere.com/stats/show_best_score'
-        stats_link = 'https://darkforest.pythonanywhere.com/stats/show_stats'
+        score_link = 'http://127.0.0.1:8000/stats/show_best_score'
+        stats_link = 'http://127.0.0.1:8000/stats/show_stats'
         self.response_score = requests.get(score_link)
         self.response_stats = requests.get(stats_link)
 
