@@ -29,3 +29,5 @@ from server_connection_logic.py I import methods to interact with server
 game folder have game and required folders like in original Dark Forest, but i add authorisation and folders with local stats to each other user
 
 tests.py have unit tests
+
+I also share localhost version, just check tags
