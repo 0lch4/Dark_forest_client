@@ -16,6 +16,7 @@ except IndexError:
     quit()
 
 verification = Connection(username,password)
+verification.login()
 
 #stats file are created separately for each user
 folder_path = os.path.join(os.getcwd(), "game/stats", username)
