@@ -15,12 +15,6 @@ def stop_background_music():
 #initialize mixer
 pygame.mixer.init()
 
-#login/create acc links
-links = [
-    'http://127.0.0.1:8000/stats/create_user',
-    'http://127.0.0.1:8000/stats/login',
-]
-
 #main window for client
 def main_window(username, account):
     window = tk.Tk()
@@ -138,7 +132,7 @@ def start():
         username = username_entry.get()
         password = password_entry.get()
         account = server_connection_logic.Connection(username, password)
-        check = account.conn(links[0])
+        check = account.register()
         #verify response and inform user in case he cant register
         if check == 'success':
             entry.destroy()
@@ -153,7 +147,7 @@ def start():
         username = username_entry.get()
         password = password_entry.get()
         account = server_connection_logic.Connection(username, password)
-        check = account.conn(links[1])
+        check = account.login()
         #verify response and inform user in case he cant login
         if check == 'success':
             entry.destroy()

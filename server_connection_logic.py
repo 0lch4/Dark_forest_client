@@ -3,51 +3,58 @@ import json
 
 #user have to be always log in if he want connecct to the server
 class Connection:
-    def __init__(self,username,password):
+    def __init__(self, username, password):
         self.username = username
         self.password = password
-    #login or register in server, only links was changed    
-    def conn(self, link):
+        #everything is in self session for better security
         self.session = requests.session()
-        self.response = self.session.get(link)
-        
-        # Additional security when logging in
-        self.csrf_token = self.session.cookies.get('csrftoken')
-        
-        self.headers = {
-            'X-CSRFToken': self.csrf_token
-        }
+        #login flag is for inform user when he was not logged in
+        self.logged_in = False
+
+    def login(self):
+        login_link='http://127.0.0.1:8000/stats/login'
         self.data = {
             'username': self.username,
             'password': self.password
         }
-        #send data to server
-        self.response = self.session.post(link, data=self.data, headers=self.headers)
-        
-        #i excpect some login errors and return values for them
-        if link.endswith('login'):
-            if self.response.status_code == 200 and self.response.url.endswith('login_success'):
-                return 'success'
+        #logining the user
+        self.response = self.session.post(login_link, data=self.data)
+        #csrf authorization
+        csrftoken = self.response.cookies.get('csrftoken')
+        self.session.headers.update({'X-CSRFToken': csrftoken})
+        #return info to main app about logging status
+        if self.response.status_code == 200 and self.response.url.endswith('login_success'):
+            self.logged_in = True
+            return 'success'
+        else:
+            if self.response.status_code == 200:
+                return 'Bad username or password'
             else:
-                if self.response.status_code == 200:
-                    return 'Bad username or password'
-                else:
-                    #for unexpected errors
-                    return f'Error {self.response.status_code} pleas contact to administrator https://github.com/0lch4'
+                return f'Error {self.response.status_code} please contact the administrator at https://github.com/0lch4'
 
-        #i excpect some register errors and return values for them        
-        if link.endswith('create_user'):
-            if self.response.status_code == 200 and self.response.url.endswith('register_success'):
-                return 'success'
+    def register(self):
+        register_link='http://127.0.0.1:8000/stats/create_user'
+        self.data = {
+            'username': self.username,
+            'password': self.password
+        }
+        self.response = self.session.post(register_link, data=self.data)
+
+        if self.response.status_code == 200 and self.response.url.endswith('register_success'):
+            #when account was created sucessfully register method use login method to login in new account else inform about isuesses
+            self.login()
+            return 'success'
+        else:
+            if self.response.status_code == 200:
+                return 'User exists'
             else:
-                if self.response.status_code == 200:
-                    return 'User exsist'
-                else:
-                    #for unexpected errors
-                    return f'Error {self.response.status_code} pleas contact to administrator https://github.com/0lch4'
-                
+                return f'Error {self.response.status_code} please contact the administrator at https://github.com/0lch4'
+
     #send new player best score to server
     def update_best_score(self,username):
+        if not self.logged_in:
+            return 'Not logged in'
+        
         link = 'http://127.0.0.1:8000/stats/modify_best_score'
         #score was reading from json file
         new_best_score=load_stats(username)
@@ -55,7 +62,9 @@ class Connection:
         'username': self.username,
         'best_score': new_best_score['best_score'],
         }
-        self.response = requests.post(link, data=self.data)
+        csrftoken = self.session.cookies.get('csrftoken')
+        self.session.headers.update({'X-CSRFToken': csrftoken})
+        self.response = self.session.post(link, data=self.data)
         if self.response.status_code == 200:
             pass
         else:
@@ -63,25 +72,28 @@ class Connection:
     
     #show global best scores    
     def show_best_score(self):
+        if not self.logged_in:
+            return 'Not logged in'
+
         link = 'http://127.0.0.1:8000/stats/show_best_score'
-        self.response = requests.get(link)
-        
+        self.response = self.session.get(link)
+
         if self.response.status_code == 200:
             self.stats = self.response.json()
             self.stats = json.loads(self.stats)
-            #Sort by best score
             sorted_stats = sorted(self.stats, key=lambda x: x['fields']['best_score'], reverse=True)
             output = ''
-            #return data to main app
             for i in sorted_stats:
                 output += f"{i['fields']['username']}: {i['fields']['best_score']}\n"
-            
             return output
         else:
             return f'Error {self.response.status_code}, please contact the administrator at https://github.com/0lch4'
         
     #send new player statse to server 
     def update_stats(self,username):
+        if not self.logged_in:
+            return 'Not logged in'
+        
         link ='http://127.0.0.1:8000/stats/modify_stats'
         #stats was reading from json file
         new_stats = load_stats(username)
@@ -97,7 +109,9 @@ class Connection:
         'mutants_killed': new_stats['mutants_killed'],
         'ghosts_killed': new_stats['ghosts_killed'],
         }
-        self.response = requests.post(link, data=self.data)
+        csrftoken = self.session.cookies.get('csrftoken')
+        self.session.headers.update({'X-CSRFToken': csrftoken})
+        self.response = self.session.post(link, data=self.data)
         if self.response.status_code == 200:
             pass
         else:
@@ -105,8 +119,11 @@ class Connection:
         
     #show global stats            
     def show_stats(self):
+        if not self.logged_in:
+            return 'Not logged in'
+        
         link='http://127.0.0.1:8000/stats/show_stats'
-        self.response = requests.get(link)
+        self.response = self.session.get(link)
         if self.response.status_code == 200:
             self.stats = self.response.json()
             self.stats = json.loads(self.stats)
@@ -132,11 +149,13 @@ class Connection:
     
     #load user data from server to local    
     def load_data_to_local(self):
+        if not self.logged_in:
+            return 'Not logged in'
         #links with user stats and best score
         score_link = 'http://127.0.0.1:8000/stats/show_best_score'
         stats_link = 'http://127.0.0.1:8000/stats/show_stats'
-        self.response_score = requests.get(score_link)
-        self.response_stats = requests.get(stats_link)
+        self.response_score = self.session.get(score_link)
+        self.response_stats = self.session.get(stats_link)
 
         data_stats = {}
         data_score = {}
