@@ -1,6 +1,6 @@
 # Dark-forest-client
 
-![GitHub forks](https://img.shields.io/badge/Version-1.1-red)
+![GitHub forks](https://img.shields.io/badge/Version-1.2-red)
 
 Client for Dark Forest game, integrate with Dark Forest server
 
