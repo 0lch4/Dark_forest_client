@@ -64,6 +64,7 @@ class Connection:
         }
         csrftoken = self.session.cookies.get('csrftoken')
         self.session.headers.update({'X-CSRFToken': csrftoken})
+        self.session.headers.update({'Referer': 'https://darkforest.pythonanywhere.com'})
         self.response = self.session.post(link, data=self.data)
         if self.response.status_code == 200:
             pass
@@ -111,6 +112,7 @@ class Connection:
         }
         csrftoken = self.session.cookies.get('csrftoken')
         self.session.headers.update({'X-CSRFToken': csrftoken})
+        self.session.headers.update({'Referer': 'https://darkforest.pythonanywhere.com'})
         self.response = self.session.post(link, data=self.data)
         if self.response.status_code == 200:
             pass
