@@ -5,6 +5,9 @@ import subprocess
 from tkinter import ttk, font
 import pygame
 
+width=1920
+height=1080
+
 #playin background music
 def play_background_music():
     pygame.mixer.music.load("client_sounds/darkforest_client.mp3")
@@ -17,6 +20,8 @@ pygame.mixer.init()
 
 #main window for client
 def main_window(username, account):
+    global width
+    global height
     window = tk.Tk()
     #inscription at the top of the window
     window.title(f"Dark_forest_client - {username} Logged In")
@@ -40,12 +45,17 @@ def main_window(username, account):
                              command=lambda: show_stats_window(account, window),
                              bg="black", fg="red",width=14,height=2,font=dark_forest_font)
     stats_button.pack(pady=16)
+    
+    settings_button = tk.Button(background_label, text="Settings",
+                            command=lambda: settings(window),
+                            bg="black", fg="red",width=14,height=2,font=dark_forest_font)
+    settings_button.pack(pady=10)
 
     #game starting button with some style, launching the game
     play_button = tk.Button(background_label, text="Play Dark Forest",
-                            command=lambda: play(username, account.password),
+                            command=lambda: play(username, account.password,width,height),
                             bg="black", fg="red",width=14,height=2,font=dark_forest_font)
-    play_button.pack()
+    play_button.pack(pady=70)
     
     #main loop from main window
     window.mainloop()
@@ -112,6 +122,63 @@ def show_best_scores_window(account, window):
     #size
     scores_pane.grid_rowconfigure(1, weight=1)
     scores_pane.grid_columnconfigure(0, weight=1)
+    
+    
+def settings(window):
+    global width_game
+    global height_game
+    #font, if you have error here pleas install font from game/font/Snap.ttf
+    dark_forest_font = font.Font(family="Snap ITC", size=18)
+    #create new view in main window
+    settings_pane = ttk.PanedWindow(window, orient=tk.VERTICAL)
+    settings_pane.pack(fill='both', expand=True)
+    #load background image into paned window
+    background_image = tk.PhotoImage(file="client_textures/menu.png")
+    background_label = tk.Label(settings_pane, image=background_image)
+    background_label.image = background_image
+    background_label.place(x=0, y=0, relwidth=1, relheight=1)
+    #inscription at the top of window
+    settings_label = tk.Label(settings_pane, text="Resolution", bg='black', fg="red", font=dark_forest_font)
+    settings_label.pack(pady=10)
+    
+    width_label = tk.Label(settings_pane, text="width", bg='black', fg="red", font=dark_forest_font)
+    width_label.pack(pady=10)
+    
+    width_game = tk.Entry(settings_pane,bg='black', 
+                              fg="red",font=dark_forest_font)
+    
+    width_game.pack(pady=10)
+    
+    height_label = tk.Label(settings_pane, text="height", bg='black', fg="red", font=dark_forest_font)
+    height_label.pack(pady=10)
+    
+    height_game = tk.Entry(settings_pane,bg='black', 
+                              fg="red",font=dark_forest_font)
+    
+    height_game.pack(pady=10)
+    
+    confirm_button = tk.Button(settings_pane, text="Confirm",command=lambda:change_resolution(), bg='black', fg="red",
+                            font=dark_forest_font)
+    confirm_button.pack(pady=10)
+    
+    
+    #back to the main view in main window
+    back_button = tk.Button(settings_pane, text="Back", command=settings_pane.destroy, bg='black', fg="red",
+                            font=dark_forest_font)
+    back_button.pack(pady=10)
+    #size
+    settings_pane.grid_rowconfigure(1, weight=1)
+    settings_pane.grid_columnconfigure(0, weight=1)
+    
+    def change_resolution():
+        global width
+        global height
+        new_width = width_game.get()
+        new_height = height_game.get()
+        width = new_width
+        height = new_height
+        return width,height
+        
 
 def start(): 
     #login/register window, closing after login/register, static window size
@@ -190,9 +257,9 @@ def start():
     entry.mainloop()
 
 #launch the game
-def play(username, password):
+def play(username, password,width_game,height_game):
     stop_background_music()
-    subprocess.run(['python', 'game/gra.py', username, password], creationflags=subprocess.CREATE_NO_WINDOW)
+    subprocess.run(['python', 'game/gra.py', username, password,str(width_game),str(height_game)], creationflags=subprocess.CREATE_NO_WINDOW)
 
 if __name__ == '__main__':
     start()

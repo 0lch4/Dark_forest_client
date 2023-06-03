@@ -12,6 +12,8 @@ from server_connection_logic import Connection
 try:
     username = sys.argv[1]
     password = sys.argv[2]
+    window_width = int(sys.argv[3])
+    window_height = int(sys.argv[4])
 except IndexError:
     quit()
 
@@ -45,9 +47,7 @@ verification.load_data_to_local()
 pygame.init()
 #mouse disable
 pygame.mouse.set_visible(False)
-#resolution
-window_width = 1920
-window_height = 1080
+
 window = pygame.display.set_mode((window_width, window_height))
 #font in the game
 font = pygame.font.Font(None, 36)
