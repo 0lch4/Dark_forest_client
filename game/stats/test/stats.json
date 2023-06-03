@@ -1,12 +1,12 @@
 {
-    "best_score": "3",
-    "all_levels": "13",
-    "all_gold": "8",
-    "enemies_killed": "1",
-    "destroyed_obstacles": "3",
-    "bosses_killed": "0",
-    "devils_killed": "1",
-    "fasts_killed": "0",
-    "mutants_killed": "0",
-    "ghosts_killed": "0"
+    "all_levels": 26,
+    "all_gold": 15,
+    "enemies_killed": 1,
+    "destroyed_obstacles": 3,
+    "bosses_killed": 0,
+    "devils_killed": 1,
+    "fasts_killed": 0,
+    "mutants_killed": 0,
+    "ghosts_killed": 0,
+    "best_score": "3"
 }

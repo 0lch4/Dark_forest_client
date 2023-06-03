@@ -8,7 +8,7 @@ import os
 sys.path.append('../Dark_forest_client')
 from server_connection_logic import Connection
 
-#verify player
+#verify player and set resolution, default is fhd
 try:
     username = sys.argv[1]
     password = sys.argv[2]
@@ -122,8 +122,18 @@ intro1 = pygame.image.load("game/textures/intro.png")
 intro2 = pygame.image.load("game/textures/intro2.png")
 intro3 = pygame.image.load("game/textures/intro3.png")
 olchastudio = pygame.image.load("game/textures/olchastudio.png")
+
+#scaling intro textures
+menu =pygame.transform.scale(menu, window.get_size())
+intro1 =pygame.transform.scale(intro1, window.get_size())
+intro2 =pygame.transform.scale(intro2, window.get_size())
+intro3 =pygame.transform.scale(intro3, window.get_size())
+olchastudio =pygame.transform.scale(olchastudio, window.get_size())
+
 #dead screen texture
 dead_screen = pygame.image.load("game/textures/deadscreen.png")
+dead_screen =pygame.transform.scale(dead_screen, window.get_size())
+
 #end of the game texture
 end_texture = pygame.transform.scale(pygame.image.load(
         "game/textures/end.png"), (window_width, window_height))
@@ -532,7 +542,7 @@ def deadscreen():
     time.sleep(2)
     #load dead screen and show player score
     window.blit(dead_screen, (0, 0))
-    dead_screen_font = pygame.font.Font('game/font/snap.ttf', 100)
+    dead_screen_font = pygame.font.Font('game/font/snap.ttf', window_width//19)
     #show best score
     with open(f'game/stats/{username}/stats.json', 'r') as f:
         data = json.load(f)
@@ -601,6 +611,7 @@ def deadscreen():
 #pause the game when player press m
 def pause():
     pauza = pygame.image.load("game/textures/pauza.png")
+    pauza = pygame.transform.scale(pauza, window.get_size())
     waiting = True
     while waiting:
         window.blit(pauza, (1, 1))
@@ -1171,13 +1182,13 @@ def status():
     font = pygame.font.Font('game/font/snap.ttf', 30)
     points_text = font.render(
         f'Gold: {points_counter}', True, (255, 0, 0))
-    window.blit(points_text, (1750, 10))
+    window.blit(points_text, (window_width-170, 10))
     points_text = font.render(
         f'Level: {level}', True, (255, 0, 0))
     window.blit(points_text, (20, 10))
     points_text = font.render(
         f'Bullets: {magazine}', True, (255, 0, 0))
-    window.blit(points_text, (850, 10))
+    window.blit(points_text, (window_width//2.3, 10))
     #boss HP is the letter l at the bottom of the screen, which decreases in multiples depending on his health
     if background == background4:
         points_str = 'l' * boss_hp

@@ -138,8 +138,11 @@ def settings(window):
     background_label.image = background_image
     background_label.place(x=0, y=0, relwidth=1, relheight=1)
     #inscription at the top of window
-    settings_label = tk.Label(settings_pane, text="Resolution", bg='black', fg="red", font=dark_forest_font)
+    settings_label = tk.Label(settings_pane, text="Enter your screen resolution", bg='black', fg="red", font=dark_forest_font)
     settings_label.pack(pady=10)
+    
+    screen_label = tk.Label(settings_pane, text="Default is 1920x1080", bg='black', fg="red", font=dark_forest_font)
+    screen_label.pack(pady=10)
     
     width_label = tk.Label(settings_pane, text="width", bg='black', fg="red", font=dark_forest_font)
     width_label.pack(pady=10)
@@ -175,10 +178,16 @@ def settings(window):
         global height
         new_width = width_game.get()
         new_height = height_game.get()
-        width = new_width
-        height = new_height
-        return width,height
-        
+        try:
+            if int(new_width) >= 800 and int(new_height) >= 600:
+                width = new_width
+                height = new_height
+                return width,height
+            else:
+                return  messagebox.showerror('Error','Minimal resolution is 800x600')
+            
+        except ValueError:
+            return  messagebox.showerror('Error','Enter correct resolution')
 
 def start(): 
     #login/register window, closing after login/register, static window size
