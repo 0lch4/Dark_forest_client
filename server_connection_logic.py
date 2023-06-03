@@ -17,6 +17,8 @@ class Connection:
             'username': self.username,
             'password': self.password
         }
+        if self.username == '' or self.password == '':
+            return 'Enter username and password in text area'
         #logining the user
         self.response = self.session.post(login_link, data=self.data)
         #csrf authorization
@@ -38,6 +40,8 @@ class Connection:
             'username': self.username,
             'password': self.password
         }
+        if self.username == '' or self.password == '':
+            return 'Enter username and password in text area'
         self.response = self.session.post(register_link, data=self.data)
 
         if self.response.status_code == 200 and self.response.url.endswith('register_success'):

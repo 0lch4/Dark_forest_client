@@ -139,6 +139,8 @@ def start():
             main_window(username, account)
         elif check == 'User exists':
             messagebox.showerror('Error', check)
+        elif check == 'Enter username and password in text area':
+            messagebox.showerror('Error', check)
         else:
             messagebox.showerror('Unexpected error', check)
             
@@ -153,6 +155,8 @@ def start():
             entry.destroy()
             main_window(username, account)
         elif check == 'Bad username or password':
+            messagebox.showerror('Error', check)
+        elif check == 'Enter username and password in text area':
             messagebox.showerror('Error', check)
         else:
             messagebox.showerror('Unexpected error', check)
