@@ -8,6 +8,8 @@ Client instalator: https://drive.google.com/drive/folders/1VaAz0Dw-3dUOMgjF_Wv8N
 
 Now you can create account,login to account,show globals scores and stats.
 
+In client settings you can change resolution and brightness
+
 I host server in internet so now u can always use client to rivalize with other players
 
 Install libs: pip install -r requirements.txt

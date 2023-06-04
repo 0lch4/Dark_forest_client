@@ -7,6 +7,7 @@ import pygame
 
 width=1920
 height=1080
+bright=0
 
 #playin background music
 def play_background_music():
@@ -127,6 +128,7 @@ def show_best_scores_window(account, window):
 def settings(window):
     global width_game
     global height_game
+    global bright
     #font, if you have error here pleas install font from game/font/Snap.ttf
     dark_forest_font = font.Font(family="Snap ITC", size=18)
     #create new view in main window
@@ -137,38 +139,44 @@ def settings(window):
     background_label = tk.Label(settings_pane, image=background_image)
     background_label.image = background_image
     background_label.place(x=0, y=0, relwidth=1, relheight=1)
-    #inscription at the top of window
+    #inscription about resolution
     settings_label = tk.Label(settings_pane, text="Enter your screen resolution", bg='black', fg="red", font=dark_forest_font)
-    settings_label.pack(pady=10)
-    
+    settings_label.pack(pady=5)
     screen_label = tk.Label(settings_pane, text="Default is 1920x1080", bg='black', fg="red", font=dark_forest_font)
-    screen_label.pack(pady=10)
-    
+    screen_label.pack(pady=5)
+    #place to enter your width
     width_label = tk.Label(settings_pane, text="width", bg='black', fg="red", font=dark_forest_font)
-    width_label.pack(pady=10)
-    
+    width_label.pack(pady=5)
     width_game = tk.Entry(settings_pane,bg='black', 
                               fg="red",font=dark_forest_font)
-    
-    width_game.pack(pady=10)
-    
+    width_game.pack(pady=5)
+    #place to enter your height
     height_label = tk.Label(settings_pane, text="height", bg='black', fg="red", font=dark_forest_font)
-    height_label.pack(pady=10)
-    
+    height_label.pack(pady=5)
     height_game = tk.Entry(settings_pane,bg='black', 
                               fg="red",font=dark_forest_font)
-    
-    height_game.pack(pady=10)
-    
-    confirm_button = tk.Button(settings_pane, text="Confirm",command=lambda:change_resolution(), bg='black', fg="red",
+    height_game.pack(pady=5)
+    #button to confirm your resolution
+    confirm_resolution_button = tk.Button(settings_pane, text="Confirm new resolution",command=lambda:change_resolution(), bg='black', fg="red",
                             font=dark_forest_font)
-    confirm_button.pack(pady=10)
-    
-    
+    confirm_resolution_button.pack(pady=5)
+    #inscription about brightness
+    brightness_label = tk.Label(settings_pane, text="Enter brightness level what you prefer", bg='black', fg="red", font=dark_forest_font)
+    brightness_label.pack(pady=5)
+    brightness_label = tk.Label(settings_pane, text="Default is 0", bg='black', fg="red", font=dark_forest_font)
+    brightness_label.pack(pady=5)
+    #place to enter your height
+    brightness = tk.Entry(settings_pane,bg='black', 
+                              fg="red",font=dark_forest_font)
+    brightness.pack(pady=5)
+    #button to confirm your brighntess
+    confirm_brightness_button = tk.Button(settings_pane, text="Confirm new brightness",command=lambda: change_brightness() , bg='black', fg="red",
+                            font=dark_forest_font)
+    confirm_brightness_button.pack(pady=5)
     #back to the main view in main window
     back_button = tk.Button(settings_pane, text="Back", command=settings_pane.destroy, bg='black', fg="red",
                             font=dark_forest_font)
-    back_button.pack(pady=10)
+    back_button.pack(pady=5)
     #size
     settings_pane.grid_rowconfigure(1, weight=1)
     settings_pane.grid_columnconfigure(0, weight=1)
@@ -188,6 +196,21 @@ def settings(window):
             
         except ValueError:
             return  messagebox.showerror('Error','Enter correct resolution')
+        
+    def change_brightness():
+        global bright
+        new_bright = brightness.get()
+        try:
+            if int(new_bright) <= 50 and int(new_bright) >= 0:
+                bright = new_bright
+                return bright
+            else:
+                return  messagebox.showerror('Error','Ener a value beetween 0 and 50')
+            
+        except ValueError:
+            return  messagebox.showerror('Error','Enter correct values')
+        
+        
 
 def start(): 
     #login/register window, closing after login/register, static window size
@@ -268,7 +291,7 @@ def start():
 #launch the game
 def play(username, password,width_game,height_game):
     stop_background_music()
-    subprocess.run(['python', 'game/gra.py', username, password,str(width_game),str(height_game)], creationflags=subprocess.CREATE_NO_WINDOW)
+    subprocess.run(['python', 'game/gra.py', username, password,str(width_game),str(height_game),str(bright)], creationflags=subprocess.CREATE_NO_WINDOW)
 
 if __name__ == '__main__':
     start()

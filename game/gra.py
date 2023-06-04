@@ -14,6 +14,7 @@ try:
     password = sys.argv[2]
     window_width = int(sys.argv[3])
     window_height = int(sys.argv[4])
+    bright = int(sys.argv[5])
 except IndexError:
     quit()
 
@@ -144,12 +145,41 @@ background3 = pygame.image.load('game/textures/tlo3.jpg')
 background4 = pygame.image.load('game/textures/tlo4.1.jpg')
 background5 = pygame.image.load('game/textures/tlo5.png')
 
+
+def brightness(image, value):
+    #get background size 
+    width, height = image.get_size()
+    brightened_image = pygame.Surface((width, height))
+    #iter in pixels in background image
+    for x in range(width):
+        for y in range(height):
+            color = image.get_at((x, y))
+            #create pixels with new color
+            new_color = (
+                min(color.r + value, 255),
+                min(color.g + value, 255),
+                min(color.b + value, 255),
+                color.a
+            )
+            image.set_at((x, y), new_color)
+
+    return image
+    
+#change background brightnes with users parameters
+background1 = brightness(background1, bright)
+background2 = brightness(background2, bright)
+background3 = brightness(background3, bright)
+background4 = brightness(background4, bright)
+background5 = brightness(background5, bright)
+
 #scaling background textures
 background1 = pygame.transform.scale(background1, window.get_size())
 background2 = pygame.transform.scale(background2, window.get_size())
 background3 = pygame.transform.scale(background3, window.get_size())
 background4 = pygame.transform.scale(background4, window.get_size())
 background5 = pygame.transform.scale(background5, window.get_size())
+
+
 #list of background textures
 background_list = [background1, background2, background3,background5]
 #default background
@@ -1747,7 +1777,7 @@ while run:
         boss_hp = 9
         for enemy in enemy_list:
             death_animation(devil_dead_animation, enemy.rect.x, enemy.rect.y)
-
+            
     #update the screen
     pygame.display.update()
 
