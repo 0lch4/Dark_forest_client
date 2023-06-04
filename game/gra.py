@@ -474,6 +474,31 @@ shield_sound.set_volume(0.5)
 refresh_sound = pygame.mixer.Sound('game/sounds/refresh.mp3')
 refresh_sound.set_volume(0.5)
 
+#algorithm for scaling number of obstacles to player resolution
+def screen_scaling():
+    global number_obstacles
+    global max_obstacles
+    #basic resolution is fhd so i calculate surface for that
+    universe = 1920*1080
+    #obstacle ratio for basic number of obstacles, this is a surface for one obstacle
+    obstacle_ratio = universe//number_obstacles
+    #player resolution surface
+    acutal_universe= window_width*window_height
+    #calculate change between player reolution surface and basic resolution surface
+    change = universe-acutal_universe
+    #calculate number of additional obstacles for player resolution surface 
+    new_obstacles = abs(change)//obstacle_ratio 
+    #if resolution is higher than basic add new obstacles
+    if change<0:
+        number_obstacles +=new_obstacles
+        max_obstacles +=new_obstacles
+    #if resolution is lower than basic reduct obstacles
+    if change>0:
+        number_obstacles -=new_obstacles
+        max_obstacles -=new_obstacles
+        
+screen_scaling()
+
 #playing sound only when nothing is playing
 def play_sound(sound):
     if not pygame.mixer.get_busy():
@@ -602,6 +627,7 @@ def deadscreen():
                             magazine = 0
                             w8 = False
                             right.color = (255, 0, 0)
+                            screen_scaling()
                             pygame.display.update()
                             break
             #if player press escape the game is closed
@@ -840,8 +866,8 @@ def obstacles():
         load(number_obstacles-2, sarna, obstacles_list, sarna_rect)
 
     if background == background3:
-        load(number_obstacles+4, deadtree, obstacles_list, dead_tree_rect)
-        load(number_obstacles+6, bones, obstacles_list, bones_rect)
+        load(number_obstacles+1, deadtree, obstacles_list, dead_tree_rect)
+        load(number_obstacles+1, bones, obstacles_list, bones_rect)
         load(number_obstacles-2, sarna, obstacles_list, sarna_rect)
     if background == background4:
         pass
