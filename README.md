@@ -33,3 +33,5 @@ game folder have game and required folders like in original Dark Forest, but i a
 tests.py have unit tests
 
 I also share localhost version, just check tags
+
+Original version: https://github.com/0lch4/Dark-forest
