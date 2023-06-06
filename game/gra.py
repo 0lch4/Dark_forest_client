@@ -16,7 +16,7 @@ try:
     window_height = int(sys.argv[4])
     bright = int(sys.argv[5])
 except IndexError:
-    quit()
+    sys.exit()
 
 verification = Connection(username,password)
 verification.login()
@@ -279,7 +279,7 @@ bullet_boom3_texture = pygame.transform.scale(
 
 # bullet explosion animation
 bullet_boom_list = [bullet_boom1_texture,
-                    bullet_boom2_texture, 
+                    bullet_boom2_texture,
                     bullet_boom3_texture]
 
 # monsters textures
