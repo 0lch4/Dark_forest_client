@@ -6,7 +6,7 @@ Client for Dark Forest game, integrate with Dark Forest server. Now you can crea
 
 You have to try survive the most number of levels. Before going to the next level you have to pick up gold in actualy level. When you pick the gold go to the right border of map. You can buy equipmend in shop, destroy obstacles and killing monsters. Press m in game to show more tips. Game have infinite number of different levels. Every 50 levels you can find boss.
 
-## License
+![GitHub forks](https://img.shields.io/badge/Version-1.2-red)
 
 Application is licensed under the MIT License.
 
@@ -53,7 +53,3 @@ python -m client.main
 Sounds an textures i find in the internet, some of it i edited.
 
 # Screenshots
-
-![screen1](screenshots/dark_forest_screen1.png)
-![screen2](screenshots/dark_forest_screen2.png)
-![screen3](screenshots/dark_forest_screen3.png)
