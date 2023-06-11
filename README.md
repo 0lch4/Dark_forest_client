@@ -1,4 +1,4 @@
-# Dark Forest client ![GitHub forks](https://img.shields.io/badge/Version-1.4.0-red)
+# Dark-forest-client ![GitHub forks](https://img.shields.io/badge/Version-1.4.0-red)
 
 # Description
 
@@ -53,3 +53,7 @@ python -m client.main
 Sounds an textures i find in the internet, some of it i edited.
 
 # Screenshots
+
+![screen1](screenshots/dark_forest_screen1.png)
+![screen2](screenshots/dark_forest_screen2.png)
+![screen3](screenshots/dark_forest_screen3.png)
