@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "dark-forest-client"
+version = "1.4.0"
+description = "Client for Dark Forest game"
+authors = ["0lch4 <127250399+0lch4@users.noreply.github.com>"]
+license = "MIT"
+readme = "README.md"
+packages = [{include = "dark_forest_client"}]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+pygame = "2.4.0"
+requests ="2.28.2"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^7.3.2"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

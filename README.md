@@ -1,35 +1,61 @@
 # Dark-forest-client
 
-![GitHub forks](https://img.shields.io/badge/Version-1.2-red)
+![GitHub forks](https://img.shields.io/badge/Version-1.4-red)
 
-Client for Dark Forest game, integrate with Dark Forest server
+# Description
 
-Client instalator: https://drive.google.com/drive/folders/1VaAz0Dw-3dUOMgjF_Wv8NaGZLofEAw8w?usp=sharing
+Client for Dark Forest game, integrate with Dark Forest server. Now you can create account,login to account,show globals scores and stats. In client settings you can change resolution and brightness.I host server in internet so now u can always use client to rivalize with other players.
 
-Now you can create account,login to account,show globals scores and stats.
+You have to try survive the most number of levels. Before going to the next level you have to pick up gold in actualy level. When you pick the gold go to the right border of map. You can buy equipmend in shop, destroy obstacles and killing monsters. Press m in game to show more tips. Game have infinite number of different levels. Every 50 levels you can find boss.
 
-In client settings you can change resolution and brightness
+## License
 
-I host server in internet so now u can always use client to rivalize with other players
+Application is licensed under the MIT License.
 
-Install libs: pip install -r requirements.txt
+# [Client instalator](https://drive.google.com/drive/folders/1VaAz0Dw-3dUOMgjF_Wv8NaGZLofEAw8w?usp=sharing)
 
-Install font: go to game/font/Snap.ttf open it and click install
+# Manual Instalation
 
-Adresess in server_connection_logic.py are configured to Dark Forest server in localhost 
+## Copying the repository
 
-Description:
+```
+git clone https://github.com/0lch4/Dark_forest.git
+```
 
-client_sounds folder have background music for client
+## Installing the liblaries
 
-client_textures folder have textures for client
+You have to use `poetry` to install liblaries:
 
-main.py is a main client program
+```
+pip install poetry
+```
 
-from server_connection_logic.py I import methods to interact with server
+In next step enter in main project location:
 
-game folder have game and required folders like in original Dark Forest, but i add authorisation and folders with local stats to each other user
+```
+poetry install
+```
 
-tests.py have unit tests
+## Font installation
 
-I also share localhost version, just check tags
+Go to the 
+```
+client/client/game/font/Snap.ttf
+``` 
+Click on it and download
+
+# Usage
+
+When all dependencies are met, enter in the main location:
+
+```
+python -m client.main
+```
+# Sources:
+Sounds an textures i find in the internet, some of it i edited.
+
+# Screenshots
+
+![screen1](screenshots/dark_forest_screen1.png)
+![screen2](screenshots/dark_forest_screen2.png)
+![screen3](screenshots/dark_forest_screen3.png)
