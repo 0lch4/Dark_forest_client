@@ -15,7 +15,7 @@ class Connection:
         self.logged_in = False
 
     def login(self) -> str:
-        login_link = "https://darkforest.pythonanywhere.com/stats/login"
+        login_link = "http://127.0.0.1:8000/stats/login"
         self.data = {"username": self.username, "password": self.password}
         if not self.username or not self.password:
             return "Enter username and password in text area"
@@ -37,7 +37,7 @@ class Connection:
         return f"Error {self.response.status_code} please contact the administrator at https://github.com/0lch4"
 
     def register(self) -> str:
-        register_link = "https://darkforest.pythonanywhere.com/stats/create_user"
+        register_link = "http://127.0.0.1:8000/stats/create_user"
         self.data = {"username": self.username, "password": self.password}
         if self.username == "" or self.password == "":  # noqa: PLC1901
             return "Enter username and password in text area"
@@ -59,7 +59,7 @@ class Connection:
         if not self.logged_in:
             return "Not logged in"
 
-        link = "https://darkforest.pythonanywhere.com/stats/modify_best_score"
+        link = "http://127.0.0.1:8000/stats/modify_best_score"
         # score was reading from json file
         new_best_score = load_stats(username)
         self.data = {
@@ -69,7 +69,7 @@ class Connection:
         csrftoken = self.session.cookies.get("csrftoken")
         self.session.headers.update({"X-CSRFToken": csrftoken})
         self.session.headers.update(
-            {"Referer": "https://darkforest.pythonanywhere.com"}
+            {"Referer": "http://127.0.0.1:8000"}
         )
         self.response = self.session.post(link, data=self.data)
         if self.response.status_code == 200:
@@ -84,7 +84,7 @@ class Connection:
         if not self.logged_in:
             return "Not logged in"
 
-        link = "https://darkforest.pythonanywhere.com/stats/show_best_score"
+        link = "http://127.0.0.1:8000/stats/show_best_score"
         self.response = self.session.get(link)
 
         if self.response.status_code == 200:
@@ -104,7 +104,7 @@ class Connection:
         if not self.logged_in:
             return "Not logged in"
 
-        link = "https://darkforest.pythonanywhere.com/stats/modify_stats"
+        link = "http://127.0.0.1:8000/stats/modify_stats"
         # stats was reading from json file
         new_stats = load_stats(username)
         self.data = {
@@ -122,7 +122,7 @@ class Connection:
         csrftoken = self.session.cookies.get("csrftoken")
         self.session.headers.update({"X-CSRFToken": csrftoken})
         self.session.headers.update(
-            {"Referer": "https://darkforest.pythonanywhere.com"}
+            {"Referer": "http://127.0.0.1:8000"}
         )
         self.response = self.session.post(link, data=self.data)
         if self.response.status_code == 200:
@@ -135,7 +135,7 @@ class Connection:
         if not self.logged_in:
             return "Not logged in"
 
-        link = "https://darkforest.pythonanywhere.com/stats/show_stats"
+        link = "http://127.0.0.1:8000/stats/show_stats"
         self.response = self.session.get(link)
         if self.response.status_code == 200:
             self.stats = self.response.json()
@@ -165,8 +165,8 @@ class Connection:
         if not self.logged_in:
             return "Not logged in"
         # links with user stats and best score
-        score_link = "https://darkforest.pythonanywhere.com/stats/show_best_score"
-        stats_link = "https://darkforest.pythonanywhere.com/stats/show_stats"
+        score_link = "http://127.0.0.1:8000/stats/show_best_score"
+        stats_link = "http://127.0.0.1:8000/stats/show_stats"
         self.response_score = self.session.get(score_link)
         self.response_stats = self.session.get(stats_link)
 
