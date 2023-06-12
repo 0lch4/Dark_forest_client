@@ -1,8 +1,8 @@
 # Dark-forest-client ![GitHub forks](https://img.shields.io/badge/Version-1.4.1-red)
 
-# Localhost version
-
 # Description
+
+In this branch i publish client with localhost values, to connect to the server use [Dark Forest server](https://github.com/0lch4/Dark-forest-server)
 
 Client for Dark Forest game, integrate with Dark Forest server. Now you can create account,login to account,show globals scores and stats. In client settings you can change resolution and brightness.I host server in internet so now u can always use client to rivalize with other players.
 
