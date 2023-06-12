@@ -148,7 +148,7 @@ background4 = pygame.image.load("client/game/textures/tlo4.1.jpg")
 background5 = pygame.image.load("client/game/textures/tlo5.png")
 
 
-def brightness(image: Any, value:int) -> Any:
+def brightness(image: Any, value: int) -> Any:
     # get background size
     width, height = image.get_size()
     # iter in pixels in background image
@@ -694,8 +694,6 @@ def stop_sound(sound: Any) -> None:
 
 # game intro
 def start() -> None:
-    pass
-'''
     # shows all intro slaids and play intro music refresh screen beetween intro slaids
     window.blit(olchastudio, (1, 1))
     intro_sound.play()
@@ -720,7 +718,7 @@ def start() -> None:
             keys = pygame.key.get_pressed()
             if keys[pygame.K_SPACE]:
                 waiting = False
-                stop_sound(intro_sound)'''
+                stop_sound(intro_sound)
 
 
 # deadscreen
@@ -849,9 +847,7 @@ def collision(
     while collision:
         collision = False
         for objects in lista:
-            if rect.move(x, y).colliderect(objects.rect) or rect.move(
-                x, y
-            ).colliderect(
+            if rect.move(x, y).colliderect(objects.rect) or rect.move(x, y).colliderect(
                 player1_rect
             ):
                 collision = True
@@ -1026,8 +1022,9 @@ borders_list = borders()
 
 # obstacle class
 class Obstacle:
-    def __init__(self, x: int, y: int, width: int,# noqa: PLR0913
-                 height: int, texture: Any) -> None:
+    def __init__(  # noqa: PLR0913
+        self, x: int, y: int, width: int, height: int, texture: Any
+    ) -> None:
         self.rect = pygame.Rect(x, y, width, height)
         self.texture = texture
         self.mask = pygame.mask.from_surface(texture)
@@ -1166,7 +1163,7 @@ class Enemy:
         self.left = left
         self.right = right
         new_direction = self.direction
-        if self.type in ("mutant","ghost"):
+        if self.type in ("mutant", "ghost"):
             if new_direction == (1, 0):
                 self.texture = right
             elif new_direction == (-1, 0):
@@ -1307,7 +1304,6 @@ class Bullet:
 
         elif self.direction == "down":
             self.rect.move_ip(0, self.speed)
-
 
     def draw(self, window: pygame.Surface) -> None:
         window.blit(self.texture, (self.rect.x, self.rect.y))
@@ -1886,6 +1882,7 @@ while run:
             bullets_list.append(new_bullet)
             magazine -= 1
             gun_sound.play()
+
         elif bullet_direction == "left":
             new_bullet = Bullet(
                 player1_rect.x,
@@ -1899,6 +1896,7 @@ while run:
             bullets_list.append(new_bullet)
             magazine -= 1
             gun_sound.play()
+
         elif bullet_direction == "top":
             new_bullet = Bullet(
                 player1_rect.x,
@@ -1912,6 +1910,7 @@ while run:
             bullets_list.append(new_bullet)
             magazine -= 1
             gun_sound.play()
+
         elif bullet_direction == "down":
             new_bullet = Bullet(
                 player1_rect.x,
@@ -1931,8 +1930,10 @@ while run:
         enemy.update(obstacles_list)
         if enemy.type == "mutant":
             enemy.mirror(mutant_texture_left_direction, mutant_texture_right_direction)
+
         elif enemy.type == "ghost":
             enemy.mirror(ghost_texture_left_direction, ghost_texture_right_direction)
+
         window.blit(enemy.texture, enemy.rect)
         # when player is close to monsters playing monsters sounds
         if (
@@ -1965,20 +1966,24 @@ while run:
                     fasts_killed = +1
                     fast_death_sound.play()
                     death_animation(fast_dead_animation, enemy.rect.x, enemy.rect.y)
+
                 elif enemy.type == "devil":
                     devils_killed = +1
                     devil_death_sound.play()
                     death_animation(devil_dead_animation, enemy.rect.x, enemy.rect.y)
+
                 elif enemy.type == "mutant":
                     mutants_killed = +1
                     mutant_death_sound.play()
                     death_animation(
                         mutant_bullet_dead_animation, enemy.rect.x, enemy.rect.y
                     )
+
                 elif enemy.type == "ghost":
                     ghosts_killed = +1
                     ghost_death_sound.play()
                     death_animation(ghost_dead_animation, enemy.rect.x, enemy.rect.y)
+
                 enemy.delete()
                 powershield = False
 
@@ -2067,16 +2072,19 @@ while run:
         boss_hp = 39
         for enemy in enemy_list:
             death_animation(devil_dead_animation, enemy.rect.x, enemy.rect.y)
+
     if boss_hp == 30:
         generate_new_enemy()
         boss_hp = 29
         for enemy in enemy_list:
             death_animation(devil_dead_animation, enemy.rect.x, enemy.rect.y)
+
     if boss_hp == 20:
         generate_new_enemy()
         boss_hp = 19
         for enemy in enemy_list:
             death_animation(devil_dead_animation, enemy.rect.x, enemy.rect.y)
+
     if boss_hp == 10:
         generate_new_enemy()
         boss_hp = 9

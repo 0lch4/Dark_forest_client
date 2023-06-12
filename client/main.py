@@ -111,7 +111,7 @@ def show_stats_window(account: Any, window: Any) -> None:
     # load background image into paned window
     background_image = tk.PhotoImage(file="client/client_textures/menu.png")
     background_label = tk.Label(stats_pane, image=background_image)
-    background_label.image = background_image # type: ignore
+    background_label.image = background_image  # type: ignore
     background_label.place(x=0, y=0, relwidth=1, relheight=1)
     # inscription at the top of window
     stats_label = tk.Label(

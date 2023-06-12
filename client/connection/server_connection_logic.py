@@ -17,7 +17,7 @@ class Connection:
     def login(self) -> str:
         login_link = "https://darkforest.pythonanywhere.com/stats/login"
         self.data = {"username": self.username, "password": self.password}
-        if self.username == "" or self.password == "":  # noqa: PLC1901
+        if not self.username or not self.password:
             return "Enter username and password in text area"
         # logining the user
         self.response = self.session.post(login_link, data=self.data)
@@ -30,8 +30,10 @@ class Connection:
         ):
             self.logged_in = True
             return "success"
+
         if self.response.status_code == 200:
             return "Bad username or password"
+
         return f"Error {self.response.status_code} please contact the administrator at https://github.com/0lch4"
 
     def register(self) -> str:
@@ -39,8 +41,8 @@ class Connection:
         self.data = {"username": self.username, "password": self.password}
         if self.username == "" or self.password == "":  # noqa: PLC1901
             return "Enter username and password in text area"
-        self.response = self.session.post(register_link, data=self.data)
 
+        self.response = self.session.post(register_link, data=self.data)
         if self.response.status_code == 200 and self.response.url.endswith(
             "register_success"
         ):
@@ -125,6 +127,7 @@ class Connection:
         self.response = self.session.post(link, data=self.data)
         if self.response.status_code == 200:
             return None
+
         return f"Error {self.response.status_code} pleas contact to administrator https://github.com/0lch4"
 
     # show global stats
@@ -154,6 +157,7 @@ class Connection:
                 )
 
             return output
+
         return f"Error {self.response.status_code} pleas contact to administrator https://github.com/0lch4"
 
     # load user data from server to local
