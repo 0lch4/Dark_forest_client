@@ -6,7 +6,6 @@ import math
 from pathlib import Path
 from typing import Any
 import pygame
-
 from client.connection.server_connection_logic import Connection
 
 # verify player and set resolution, default is fhd
@@ -356,7 +355,7 @@ devil_bullet_corpses = pygame.transform.scale(
     (devil_width, devil_height),
 )
 # devil corpses texture (killed by shield)
-devil_corpses = pygame.transform.scale(
+devil_shield_corpses = pygame.transform.scale(
     pygame.image.load("client/game/textures/devildead3.png"),
     (devil_width, devil_height),
 )
@@ -425,12 +424,12 @@ mutant_texture_right_direction = pygame.transform.scale(
 # mutant rect
 mutant_rect = mutant_texture_left_direction.get_rect()
 # mutant corpses (killed by gun)
-mutant_corpses_bullet = pygame.transform.scale(
+mutant_shield_corpses = pygame.transform.scale(
     pygame.image.load("client/game/textures/mutantdead3L.png"),
     (mutant_width, mutant_height),
 )
 # mutant corpses (killed by shield)
-mutant_corpses_shield = pygame.transform.scale(
+mutant_bullet_corpses = pygame.transform.scale(
     pygame.image.load("client/game/textures/mutantL.dead3v3.png"),
     (mutant_width, mutant_height),
 )
@@ -568,15 +567,15 @@ bones_texture = pygame.transform.scale(
 # bones rect
 bones_rect = bones_texture.get_rect()
 
-# sarna size
-sarna_width = 50
-sarna_height = 30
-# sarna texture
-sarna_texture = pygame.transform.scale(
-    pygame.image.load("client/game/textures/sarna.png"), (bones_width, bones_height)
+# animal size
+animal_width = 50
+animal_height = 30
+# animal texture
+animal_texture = pygame.transform.scale(
+    pygame.image.load("client/game/textures/sarna.png"), (animal_width, animal_height)
 )
-# sarna rect
-sarna_rect = sarna_texture.get_rect()
+# animal rect
+sarna_rect = animal_texture.get_rect()
 
 # dead tree size
 dead_tree_width = 70
@@ -695,6 +694,8 @@ def stop_sound(sound: Any) -> None:
 
 # game intro
 def start() -> None:
+    pass
+'''
     # shows all intro slaids and play intro music refresh screen beetween intro slaids
     window.blit(olchastudio, (1, 1))
     intro_sound.play()
@@ -719,7 +720,7 @@ def start() -> None:
             keys = pygame.key.get_pressed()
             if keys[pygame.K_SPACE]:
                 waiting = False
-                stop_sound(intro_sound)
+                stop_sound(intro_sound)'''
 
 
 # deadscreen
@@ -827,11 +828,11 @@ def deadscreen() -> None:  # noqa: PLR0915
 
 # pause the game when player press m
 def pause() -> None:
-    pauza = pygame.image.load("client/game/textures/pauza.png")
-    pauza = pygame.transform.scale(pauza, window.get_size())
+    pause_window = pygame.image.load("client/game/textures/pause_window.png")
+    pause_window = pygame.transform.scale(pause_window, window.get_size())
     waiting = True
     while waiting:
-        window.blit(pauza, (1, 1))
+        window.blit(pause_window, (1, 1))
         pygame.display.update()
         for _ in pygame.event.get():
             keys = pygame.key.get_pressed()
@@ -847,8 +848,8 @@ def collision(
     collision = True
     while collision:
         collision = False
-        for i in lista:
-            if rect.move(x, y).colliderect(i.rect) or rect.move(
+        for objects in lista:
+            if rect.move(x, y).colliderect(objects.rect) or rect.move(
                 x, y
             ).colliderect(
                 player1_rect
@@ -1063,9 +1064,9 @@ def obstacles() -> list[Any]:  # noqa: C901
         bones = Obstacle(xbones, ybones, bones_width, bones_height, bones_texture)
         obstacles_list.append(bones)
 
-    def sarna(xsarna: int, ysarna: int) -> None:
-        sarna = Obstacle(xsarna, ysarna, sarna_width, sarna_height, sarna_texture)
-        obstacles_list.append(sarna)
+    def animal(xanimal: int, yanimal: int) -> None:
+        animal = Obstacle(xanimal, yanimal, animal_width, animal_height, animal_texture)
+        obstacles_list.append(animal)
 
     def deadtree(xdeadtree: int, ydeadtree: int) -> None:
         deadtree = Obstacle(
@@ -1076,7 +1077,7 @@ def obstacles() -> list[Any]:  # noqa: C901
     # load obstacles in the map without background 4
     if background == background1:
         load(number_obstacles, tree, obstacles_list, tree_rect)
-        load(number_obstacles - 4, sarna, obstacles_list, sarna_rect)
+        load(number_obstacles - 4, animal, obstacles_list, sarna_rect)
         load(number_obstacles - 2, bush, obstacles_list, bush_rect)
         load(number_obstacles - 6, stone, obstacles_list, stone_rect)
 
@@ -1084,18 +1085,18 @@ def obstacles() -> list[Any]:  # noqa: C901
         load(number_obstacles, deadtree, obstacles_list, dead_tree_rect)
         load(number_obstacles - 2, bones, obstacles_list, bones_rect)
         load(number_obstacles - 1, stone, obstacles_list, stone_rect)
-        load(number_obstacles - 2, sarna, obstacles_list, sarna_rect)
+        load(number_obstacles - 2, animal, obstacles_list, sarna_rect)
 
     if background == background3:
         load(number_obstacles + 1, deadtree, obstacles_list, dead_tree_rect)
         load(number_obstacles + 1, bones, obstacles_list, bones_rect)
-        load(number_obstacles - 2, sarna, obstacles_list, sarna_rect)
+        load(number_obstacles - 2, animal, obstacles_list, sarna_rect)
     if background == background4:
         pass
     if background == background5:
         load(number_obstacles - 6, deadtree, obstacles_list, dead_tree_rect)
         load(number_obstacles - 3, bones, obstacles_list, bones_rect)
-        load(number_obstacles - 3, sarna, obstacles_list, sarna_rect)
+        load(number_obstacles - 3, animal, obstacles_list, sarna_rect)
 
     return obstacles_list
 
@@ -1137,15 +1138,15 @@ class Enemy:
         self.rect.x += self.speed * self.direction[0]
         self.rect.y += self.speed * self.direction[1]
 
-        for i in obstacles_list:
+        for obstacles in obstacles_list:
             if self.type == "ghost":
                 continue
-            if self.rect.colliderect(i.rect):
+            if self.rect.colliderect(obstacles.rect):
                 self.rect = self.prev_pos
                 break
 
-        for i in borders_list:
-            if self.rect.colliderect(i.rect):
+        for borders in borders_list:
+            if self.rect.colliderect(borders.rect):
                 self.rect = self.prev_pos
                 break
 
@@ -1165,12 +1166,7 @@ class Enemy:
         self.left = left
         self.right = right
         new_direction = self.direction
-        if self.type == "mutant":  # noqa: SIM114
-            if new_direction == (1, 0):
-                self.texture = right
-            elif new_direction == (-1, 0):
-                self.texture = left
-        elif self.type == "ghost":
+        if self.type in ("mutant","ghost"):
             if new_direction == (1, 0):
                 self.texture = right
             elif new_direction == (-1, 0):
@@ -1302,12 +1298,16 @@ class Bullet:
     def update(self) -> None:
         if self.direction == "left":
             self.rect.move_ip(-self.speed, 0)
+
         elif self.direction == "right":
             self.rect.move_ip(self.speed, 0)
+
         elif self.direction == "top":
             self.rect.move_ip(0, -self.speed)
+
         elif self.direction == "down":
             self.rect.move_ip(0, self.speed)
+
 
     def draw(self, window: pygame.Surface) -> None:
         window.blit(self.texture, (self.rect.x, self.rect.y))
@@ -1345,15 +1345,15 @@ class Boss:
         self.rect.x += self.speed * self.direction[0]
         self.rect.y += self.speed * self.direction[1]
 
-        for i in borders_list:
-            if self.rect.colliderect(i.rect):
+        for borders in borders_list:
+            if self.rect.colliderect(borders.rect):
                 self.rect = self.prev_pos
                 break
         # enemy colliderect with boss
-        for i in enemy_list:
-            offset = (self.rect.x - i.x, self.rect.y - i.y)
-            if i.mask.overlap(mask, offset):
-                i.rect = i.prev_pos
+        for enemies in enemy_list:
+            offset = (self.rect.x - enemies.x, self.rect.y - enemies.y)
+            if enemies.mask.overlap(mask, offset):
+                enemies.rect = enemies.prev_pos
 
         if random.random() < 0.05:  # noqa: S311
             self.change_direction()
@@ -1459,32 +1459,31 @@ def generate_new_enemy() -> None:
 
 # load death animation
 def death_animation(death_frames: list[Any], x: int, y: int) -> None:
-    for i in death_frames:
-        window.blit(i, (x, y))
+    for frames in death_frames:
+        window.blit(frames, (x, y))
         pygame.time.wait(50)
         pygame.display.update()
 
 
 # load corpses on screen, adapts to enemy type and way of death
-def corpses() -> None:  # noqa: C901, PLR0912
+def corpses() -> None:  # noqa: C901
     for enemy in dead_enemy_list:
-        if enemy.type == "fast":
-            if enemy.killed_by == "bullet":  # noqa: SIM114
-                window.blit(fast_corpses, (enemy.rect.x - 20, enemy.rect.y - 20))
-            elif enemy.killed_by == "shield":
-                window.blit(fast_corpses, (enemy.rect.x - 20, enemy.rect.y - 20))
-        if enemy.type == "devil":
-            if enemy.killed_by == "bullet":
+        if enemy.killed_by == "bullet":
+            if enemy.type == "devil":
                 window.blit(devil_bullet_corpses, (enemy.rect.x, enemy.rect.y))
-            elif enemy.killed_by == "shield":
-                window.blit(devil_corpses, (enemy.rect.x, enemy.rect.y))
-        if enemy.type == "mutant":
-            if enemy.killed_by == "shield":
-                window.blit(mutant_corpses_shield, (enemy.rect.x, enemy.rect.y))
-            elif enemy.killed_by == "bullet":
-                window.blit(mutant_corpses_bullet, (enemy.rect.x, enemy.rect.y))
+            if enemy.type == "mutant":
+                window.blit(mutant_bullet_corpses, (enemy.rect.x, enemy.rect.y))
+
+        if enemy.killed_by == "shield":
+            if enemy.type == "devil":
+                window.blit(devil_shield_corpses, (enemy.rect.x, enemy.rect.y))
+            if enemy.type == "mutant":
+                window.blit(mutant_shield_corpses, (enemy.rect.x, enemy.rect.y))
+
         if enemy.type == "ghost":
             window.blit(ghost_corpses, (enemy.rect.x, enemy.rect.y))
+        if enemy.type == "fast":
+            window.blit(fast_corpses, (enemy.rect.x - 20, enemy.rect.y - 20))
 
     for boss in dead_boss_list:
         window.blit(boss_corpses, (boss.rect.x, boss.rect.y))
@@ -1527,6 +1526,7 @@ def stats() -> None:
     file_path = Path(f"client/game/stats/{username}/stats.json")
     with file_path.open(mode="r") as f:
         old_stats = json.load(f)
+
     new_stats = {
         "all_levels": level + int(old_stats["all_levels"]),
         "all_gold": gold_counter + int(old_stats["all_gold"]),
@@ -1568,9 +1568,7 @@ while run:
     keys = pygame.key.get_pressed()
     for event in pygame.event.get():
         # click on x in window or escape ending the game
-        if event.type == pygame.QUIT:
-            run = False
-        if keys[pygame.K_ESCAPE]:
+        if event.type == pygame.QUIT or keys[pygame.K_ESCAPE]:
             run = False
 
     # parametr to add or subtract player x and y
@@ -1612,49 +1610,46 @@ while run:
 
     # checking for collisions with borders (borders dont have masks,
     # so checking for collisions with them looks different)
-    for i in borders_list:
-        if player1_rect.colliderect(i):
-            if i == borders_list[0]:
-                y = i.rect.top + 5
-            elif i == borders_list[1]:
-                y = i.rect.bottom - 40
-            elif i == borders_list[2]:
-                x = i.rect.left + 5
-            if right.color == (255, 0, 0) and i == borders_list[3]:
-                x = i.rect.right - 40
+    for border in borders_list:
+        if player1_rect.colliderect(border):
+            if border == borders_list[0]:
+                y = border.rect.top + 5
+            elif border == borders_list[1]:
+                y = border.rect.bottom - 40
+            elif border == borders_list[2]:
+                x = border.rect.left + 5
+            if right.color == (255, 0, 0) and border == borders_list[3]:
+                x = border.rect.right - 40
 
     # abilities events pressed and released is for eliminate double click
     if keys[pygame.K_o]:
-        if o_key_released:
-            if points_counter > 0:
-                o_key_pressed = True
-                refresh()
+        if o_key_released and points_counter > 0:
+            o_key_pressed = True
+            refresh()
             o_key_released = False
         else:
             o_key_pressed = False
             o_key_released = True
 
     if keys[pygame.K_i]:
-        if i_key_released:
-            if points_counter >= 3:
-                i_key_pressed = True
-                shield()
-                points_counter -= 3
-                powershield = True
+        if i_key_released and points_counter >= 3:
+            i_key_pressed = True
+            shield()
+            points_counter -= 3
+            powershield = True
             i_key_released = False
         else:
             i_key_pressed = False
             i_key_released = True
 
     if keys[pygame.K_p]:
-        if p_key_released:
+        if p_key_released and speed <= max_speed and points_counter >= 2:
             p_key_pressed = True
-            if speed <= max_speed and points_counter >= 2:
-                speed_boost()
-                speed += 1
-                points_counter -= 2
-            elif speed == max_speed:
-                speed_boost()
+            speed_boost()
+            speed += 1
+            points_counter -= 2
+        elif speed == max_speed:
+            speed_boost()
             p_key_released = False
         else:
             p_key_pressed = False
@@ -1670,10 +1665,9 @@ while run:
             m_key_released = True
 
     if keys[pygame.K_u]:
-        if u_key_released:
+        if u_key_released and points_counter >= 2:
             u_key_pressed = True
-            if points_counter >= 2:
-                reeload()
+            reeload()
             u_key_released = False
         else:
             u_key_pressed = False
