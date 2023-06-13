@@ -17,7 +17,7 @@ Application is licensed under the MIT License.
 ## Copying the repository
 
 ```
-git clone https://github.com/0lch4/Dark_forest.git
+git clone https://github.com/0lch4/Dark_forest_client.git
 ```
 
 ## Installing the liblaries
