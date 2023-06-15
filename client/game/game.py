@@ -789,6 +789,7 @@ def deadscreen(  # noqa: PLR0915, PLR0913
         mutants_killed,
         ghosts_killed,
         gold_counter,
+        best_score,
     ) = stats(
         enemies_killed,
         destroyed_obstacles,
@@ -798,6 +799,7 @@ def deadscreen(  # noqa: PLR0915, PLR0913
         mutants_killed,
         ghosts_killed,
         gold_counter,
+        best_score,
     )
     verification.update_best_score(username)
     verification.update_stats(username)
@@ -1538,6 +1540,7 @@ def stats(  # noqa: PLR0913
     mutants_killed: int,
     ghosts_killed: int,
     gold_counter: int,
+    best_score:int,
 ) -> None:
     file_path = Path(f"client/game/stats/{username}/stats.json")
     with file_path.open(mode="r") as f:
@@ -1578,6 +1581,7 @@ def stats(  # noqa: PLR0913
         mutants_killed,
         ghosts_killed,
         gold_counter,
+        best_score
     )
 
 
