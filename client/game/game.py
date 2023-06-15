@@ -117,6 +117,8 @@ boss_list = []
 dead_boss_list = []
 obstacles_list = []
 enemy_list = []
+gold_list = []
+borders_list = []
 
 # intro textures
 menu = pygame.image.load("client/game/textures/menu.png")
@@ -425,12 +427,12 @@ mutant_texture_right_direction = pygame.transform.scale(
 mutant_rect = mutant_texture_left_direction.get_rect()
 # mutant corpses (killed by gun)
 mutant_shield_corpses = pygame.transform.scale(
-    pygame.image.load("client/game/textures/mutantdead3L.png"),
+    pygame.image.load("client/game/textures/mutantL.dead3v3.png"),
     (mutant_width, mutant_height),
 )
 # mutant corpses (killed by shield)
 mutant_bullet_corpses = pygame.transform.scale(
-    pygame.image.load("client/game/textures/mutantL.dead3v3.png"),
+    pygame.image.load("client/game/textures/mutantdead3L.png"),
     (mutant_width, mutant_height),
 )
 # mutant death animation (killed by shield)
@@ -575,7 +577,7 @@ animal_texture = pygame.transform.scale(
     pygame.image.load("client/game/textures/sarna.png"), (animal_width, animal_height)
 )
 # animal rect
-sarna_rect = animal_texture.get_rect()
+animal_rect = animal_texture.get_rect()
 
 # dead tree size
 dead_tree_width = 70
@@ -655,9 +657,7 @@ refresh_sound.set_volume(0.5)
 
 
 # algorithm for scaling number of obstacles to player resolution
-def screen_scaling() -> None:
-    global number_obstacles  # noqa: PLW0603
-    global max_obstacles  # noqa: PLW0603
+def screen_scaling(number_obstacles: int, max_obstacles: int) -> int:
     # basic resolution is fhd so i calculate surface for that
     universe = 1920 * 1080
     # obstacle ratio for basic number of obstacles, this is a surface for one obstacle
@@ -670,15 +670,17 @@ def screen_scaling() -> None:
     new_obstacles = abs(change) // obstacle_ratio
     # if resolution is higher than basic add new obstacles
     if change < 0:
-        number_obstacles += new_obstacles  # noqa: PLW0603
-        max_obstacles += new_obstacles  # noqa: PLW0603
+        number_obstacles += new_obstacles
+        max_obstacles += new_obstacles
     # if resolution is lower than basic reduct obstacles
     if change > 0:
         number_obstacles -= new_obstacles
         max_obstacles -= new_obstacles
 
+    return number_obstacles, max_obstacles
 
-screen_scaling()
+
+number_obstacles, max_obstacles = screen_scaling(number_obstacles, max_obstacles)
 
 
 # playing sound only when nothing is playing
@@ -722,28 +724,30 @@ def start() -> None:
 
 
 # deadscreen
-def deadscreen() -> None:  # noqa: PLR0915
-    global best_score  # noqa: PLW0603
-    global level  # noqa: PLW0603
-    global points_counter  # noqa: PLW0603
-    global number_devils  # noqa: PLW0603
-    global number_fasts  # noqa: PLW0603
-    global number_mutants  # noqa: PLW0603
-    global number_ghosts  # noqa: PLW0603
-    global number_obstacles  # noqa: PLW0603
-    global p_key_pressed  # noqa: PLW0603
-    global p_key_released  # noqa: PLW0603
-    global o_key_pressed  # noqa: PLW0603
-    global o_key_released  # noqa: PLW0603
-    global i_key_pressed  # noqa: PLW0603
-    global i_key_released  # noqa: PLW0603
-    global m_key_pressed  # noqa: PLW0603
-    global m_key_released  # noqa: PLW0603
-    global powershield  # noqa: PLW0603
-    global speed  # noqa: PLW0603
-    global magazine  # noqa: PLW0603
-    global background  # noqa: PLW0603
-    global gun_on  # noqa: PLW0603
+def deadscreen(  # noqa: PLR0915, PLR0913
+    best_score: int,
+    level: int,
+    points_counter: int,
+    number_devils: int,
+    number_fasts: int,
+    number_mutants: int,
+    number_ghosts: int,
+    number_obstacles: int,
+    powershield: Any,
+    speed: int,
+    magazine: int,
+    background: pygame.Surface,
+    gun_on: Any,
+    max_obstacles: int,
+    enemies_killed: int,
+    destroyed_obstacles: int,
+    bosses_killed: int,
+    devils_killed: int,
+    fasts_killed: int,
+    mutants_killed: int,
+    ghosts_killed: int,
+    gold_counter: int,
+) -> int | Any | pygame.Surface:
     waiting = True
     w8 = True
     # load end of the game screen
@@ -757,7 +761,7 @@ def deadscreen() -> None:  # noqa: PLR0915
     file_path = Path(f"client/game/stats/{username}/stats.json")
     with file_path.open(mode="r") as f:
         data = json.load(f)
-        best_score = data["best_score"]  # noqa: PLW0603
+        best_score = data["best_score"]
     # update best score if you have more points and show best score on sreen
     if level > int(best_score):
         best_score = level
@@ -775,12 +779,31 @@ def deadscreen() -> None:  # noqa: PLR0915
         f"You survived: {level} levels", True, (255, 0, 0)
     )
     window.blit(points_text, (window_width / 4 - 80, window_height / 4))
-    stats()
+
+    (
+        enemies_killed,
+        destroyed_obstacles,
+        bosses_killed,
+        devils_killed,
+        fasts_killed,
+        mutants_killed,
+        ghosts_killed,
+        gold_counter,
+    ) = stats(
+        enemies_killed,
+        destroyed_obstacles,
+        bosses_killed,
+        devils_killed,
+        fasts_killed,
+        mutants_killed,
+        ghosts_killed,
+        gold_counter,
+    )
     verification.update_best_score(username)
     verification.update_stats(username)
     pygame.display.update()
     # when player press space stop showing scores and go into menu
-    while waiting:
+    while waiting:  # noqa: RET503
         for _ in pygame.event.get():
             keys = pygame.key.get_pressed()
             if keys[pygame.K_SPACE]:
@@ -800,14 +823,6 @@ def deadscreen() -> None:  # noqa: PLR0915
                             number_mutants = 0
                             number_ghosts = 0
                             number_obstacles = 8
-                            p_key_pressed = False
-                            p_key_released = True
-                            o_key_pressed = False
-                            o_key_released = True
-                            i_key_pressed = False
-                            i_key_released = True
-                            m_key_pressed = False
-                            m_key_released = True
                             powershield = False
                             background = background1
                             speed = 8
@@ -816,9 +831,25 @@ def deadscreen() -> None:  # noqa: PLR0915
                             magazine = 0
                             w8 = False
                             right.color = (255, 0, 0)
-                            screen_scaling()
+                            number_obstacles, max_obstacles = screen_scaling(
+                                number_obstacles, max_obstacles
+                            )
                             pygame.display.update()
-                            break
+                            return (
+                                best_score,
+                                level,
+                                points_counter,
+                                number_devils,
+                                number_fasts,
+                                number_mutants,
+                                number_ghosts,
+                                number_obstacles,
+                                powershield,
+                                speed,
+                                magazine,
+                                background,
+                                gun_on,
+                            )
             # if player press escape the game is closed
             elif keys[pygame.K_ESCAPE]:
                 sys.exit()
@@ -860,14 +891,14 @@ def collision(
                 x = random.randint(50, window_width - 50)  # noqa: S311
                 y = random.randint(50, window_height - 50)  # noqa: S311
             else:
-                x = random.randint(100, window_width - 100)  # noqa: S311
-                y = random.randint(100, window_height - 100)  # noqa: S311
+                x = random.randint(150, window_width - 150)  # noqa: S311
+                y = random.randint(150, window_height - 150)  # noqa: S311
     return x, y
 
 
 # loading objects in the map:enemies,obstacles,corpses etc
 def load(quantity: int, objectt: Any, lista: list, rect: pygame.Rect) -> None:
-    for _ in range(quantity):
+    for obj in range(quantity):
         if lista == obstacles_list:
             if background in (background1, background3, background5):
                 x = random.randint(20, window_width - 20)  # noqa: S311 # type: ignore
@@ -880,7 +911,10 @@ def load(quantity: int, objectt: Any, lista: list, rect: pygame.Rect) -> None:
             x = random.randint(20, window_width - 20)  # noqa: S311
             y = random.randint(20, window_height - 20)  # noqa: S311
 
-        if lista == enemy_list:
+        if lista == enemy_list and obj == "mutant":
+            x = random.randint(200, window_width - 200)  # noqa: S311
+            y = random.randint(200, window_height - 200)  # noqa: S311
+        else:
             x = random.randint(100, window_width - 100)  # noqa: S311
             y = random.randint(100, window_height - 100)  # noqa: S311
 
@@ -938,20 +972,19 @@ def speed_boost() -> None:
 
 
 # load new obstacles on the map
-def refresh() -> None:
-    global level  # noqa: PLW0603
-    global points_counter  # noqa: PLW0603
+def refresh(level: int, points_counter: int, gold_list: list[Any]) -> int:
     refresh_sound.play()
     refresh_banner = pygame.transform.scale(
         pygame.image.load("client/game/textures/refresh.png"), (300, 200)
     )
     window.blit(refresh_banner, (window_width / 2 - 140, window_height / 2 - 140))
-    generate_new_obstacles()
-    generate_new_gold()
+    generate_new_obstacles(obstacles_list)
+    gold_list = generate_new_gold(gold_list)
     points_counter -= 1
     level -= 1
     pygame.display.update()
     time.sleep(1)
+    return level, points_counter, gold_list
 
 
 # activating your shield
@@ -966,18 +999,17 @@ def shield() -> None:
 
 
 # buying ammunition
-def reeload() -> None:
-    global magazine  # noqa: PLW0603
-    global points_counter  # noqa: PLW0603
+def reeload(magazine: int, points_counter: int) -> int:
     reload_sound.play()
-    refresh_banner = pygame.transform.scale(
+    reload_banner = pygame.transform.scale(
         pygame.image.load("client/game/textures/reload.png"), (300, 200)
     )
-    window.blit(refresh_banner, (window_width / 2 - 140, window_height / 2 - 140))
+    window.blit(reload_banner, (window_width / 2 - 140, window_height / 2 - 140))
     magazine += 20
     points_counter -= 2
     pygame.display.update()
     time.sleep(1)
+    return magazine, points_counter
 
 
 # border class
@@ -998,10 +1030,7 @@ class Border:
 
 
 # add borders to border list
-def borders() -> list[Any]:
-    borders_list = []
-    global right  # noqa: PLW0603
-
+def borders(borders_list:list[Any]) -> list[Any]:
     up = Border(1, 1, window_width, 1)
     borders_list.append(up)
 
@@ -1014,10 +1043,10 @@ def borders() -> list[Any]:
     right = Border(window_width - 1, 1, 1, window_height, (255, 0, 0))
     borders_list.append(right)
 
-    return borders_list
+    return borders_list, right
 
 
-borders_list = borders()
+borders_list, right = borders(borders_list)
 
 
 # obstacle class
@@ -1042,9 +1071,7 @@ class Obstacle:
 
 
 # add obstacles to obstacles list
-def obstacles() -> list[Any]:  # noqa: C901
-    obstacles_list = []
-
+def obstacles(obstacles_list: list[Any]) -> list[Any]:  # noqa: C901
     def tree(xtree: int, ytree: int) -> None:
         tree = Obstacle(xtree, ytree, tree_width, tree_height, tree_texture)
         obstacles_list.append(tree)
@@ -1074,7 +1101,7 @@ def obstacles() -> list[Any]:  # noqa: C901
     # load obstacles in the map without background 4
     if background == background1:
         load(number_obstacles, tree, obstacles_list, tree_rect)
-        load(number_obstacles - 4, animal, obstacles_list, sarna_rect)
+        load(number_obstacles - 4, animal, obstacles_list, animal_rect)
         load(number_obstacles - 2, bush, obstacles_list, bush_rect)
         load(number_obstacles - 6, stone, obstacles_list, stone_rect)
 
@@ -1082,23 +1109,23 @@ def obstacles() -> list[Any]:  # noqa: C901
         load(number_obstacles, deadtree, obstacles_list, dead_tree_rect)
         load(number_obstacles - 2, bones, obstacles_list, bones_rect)
         load(number_obstacles - 1, stone, obstacles_list, stone_rect)
-        load(number_obstacles - 2, animal, obstacles_list, sarna_rect)
+        load(number_obstacles - 2, animal, obstacles_list, animal_rect)
 
     if background == background3:
         load(number_obstacles + 1, deadtree, obstacles_list, dead_tree_rect)
         load(number_obstacles + 1, bones, obstacles_list, bones_rect)
-        load(number_obstacles - 2, animal, obstacles_list, sarna_rect)
+        load(number_obstacles - 2, animal, obstacles_list, animal_rect)
     if background == background4:
         pass
     if background == background5:
         load(number_obstacles - 6, deadtree, obstacles_list, dead_tree_rect)
         load(number_obstacles - 3, bones, obstacles_list, bones_rect)
-        load(number_obstacles - 3, animal, obstacles_list, sarna_rect)
+        load(number_obstacles - 3, animal, obstacles_list, animal_rect)
 
     return obstacles_list
 
 
-obstacles_list = obstacles()
+obstacles_list = obstacles(obstacles_list)
 
 
 # enemy class
@@ -1183,7 +1210,6 @@ class Enemy:
 
 # add enemies to enemy list
 def enemies() -> list[Any]:  # noqa: C901
-    global boss_spawned  # noqa: PLW0602
     enemy_list = []
 
     def devil(xdevil: int, ydevil: int) -> None:
@@ -1243,9 +1269,9 @@ def enemies() -> list[Any]:  # noqa: C901
         if level % 5 == 0:
             load(number_ghosts, ghost, obstacles_list, ghost_rect)
         elif level % 4 == 0:
-            load(number_mutants, mutant, obstacles_list, mutant_rect)
-        elif level % 3 == 0:
             load(number_fasts, fast, obstacles_list, fast_rect)
+        elif level % 3 == 0:
+            load(number_mutants, mutant, obstacles_list, mutant_rect)
         else:
             load(number_devils, devil, obstacles_list, devil_rect)
 
@@ -1371,19 +1397,16 @@ class Boss:
 
 
 # add boss to boss list
-def boss() -> list[Any]:
-    global bs  # noqa: PLW0603
-    boss_list = []
+def boss(boss_list: list, bs: Any) -> list[Any]:
     boss = Boss(500, 500, 300, 300, boss_texture, 10, 300)
     boss_list.append(boss)
     bs = True
-    return boss_list
+    return boss_list, bs
 
 
 # creating gold in map and modify levels
-def points() -> list[Any]:
+def points(gold_list: list[Any]) -> list[Any]:
     # gold list
-    gold_list = []
     # gold size
     gold_width = 20
     gold_height = 20
@@ -1417,9 +1440,9 @@ def points() -> list[Any]:
         if level % 2 == 0:
             number_devils += 1
         if level % 3 == 0:
-            number_fasts += 1
-        if level % 4 == 0:
             number_mutants += 1
+        if level % 4 == 0:
+            number_fasts += 1
         if level % 5 == 0:
             number_ghosts += 1
 
@@ -1429,28 +1452,25 @@ def points() -> list[Any]:
     return gold_list
 
 
-gold_list = points()
+gold_list = points(gold_list)
 
 
 # clear old list and load new
-def generate_new_obstacles() -> None:
-    global obstacles_list  # noqa: PLW0603
+def generate_new_obstacles(obstacles_list: list[Any]) -> None:
     obstacles_list.clear()
     dead_boss_list.clear()
-    obstacles_list = obstacles()
+    return obstacles(obstacles_list)
 
 
 # clear old list and load new
-def generate_new_gold() -> None:
-    global gold_list  # noqa: PLW0603
+def generate_new_gold(gold_list: list[Any]) -> None:
     gold_list.clear()
-    gold_list = points()
+    return points(gold_list)
 
 
 # update list (dont clear it)
-def generate_new_enemy() -> None:
-    global enemy_list  # noqa: PLW0603
-    enemy_list = enemies()
+def generate_new_enemy() -> list[Any]:
+    return enemies()
 
 
 # load death animation
@@ -1492,8 +1512,7 @@ def corpses() -> None:  # noqa: C901
 
 
 # showing on screen level,points,bullets and boss hp on boss lvl
-def status() -> None:
-    global boss_hp  # noqa: PLW0602
+def status(boss_hp: int) -> None:
     font = pygame.font.Font("client/game/font/snap.ttf", 30)
     points_text = font.render(f"Gold: {points_counter}", True, (255, 0, 0))
     window.blit(points_text, (window_width - 170, 10))
@@ -1504,21 +1523,22 @@ def status() -> None:
     # boss HP is the letter l at the bottom of the screen, which decreases
     # in multiples depending on his health
     if background == background4:
-        points_str = "l" * boss_hp
-        pointts_text = font.render(points_str, True, (255, 0, 0))
-        window.blit(pointts_text, (700, 1000))
+        boss_hp_str = "l" * boss_hp
+        boss_hp_text = font.render(boss_hp_str, True, (255, 0, 0))
+        window.blit(boss_hp_text, (window_width//3, window_height-80))
 
 
 # save player stats to json file
-def stats() -> None:
-    global enemies_killed  # noqa: PLW0603
-    global destroyed_obstacles  # noqa: PLW0603
-    global bosses_killed  # noqa: PLW0603
-    global devils_killed  # noqa: PLW0603
-    global fasts_killed  # noqa: PLW0603
-    global mutants_killed  # noqa: PLW0603
-    global ghosts_killed  # noqa: PLW0603
-    global gold_counter  # noqa: PLW0603
+def stats(  # noqa: PLR0913
+    enemies_killed: int,
+    destroyed_obstacles: int,
+    bosses_killed: int,
+    devils_killed: int,
+    fasts_killed: int,
+    mutants_killed: int,
+    ghosts_killed: int,
+    gold_counter: int,
+) -> None:
     file_path = Path(f"client/game/stats/{username}/stats.json")
     with file_path.open(mode="r") as f:
         old_stats = json.load(f)
@@ -1548,6 +1568,17 @@ def stats() -> None:
     mutants_killed = 0
     ghosts_killed = 0
     gold_counter = 0
+
+    return (
+        enemies_killed,
+        destroyed_obstacles,
+        bosses_killed,
+        devils_killed,
+        fasts_killed,
+        mutants_killed,
+        ghosts_killed,
+        gold_counter,
+    )
 
 
 # load start od the game and play game music
@@ -1621,7 +1652,7 @@ while run:
     if keys[pygame.K_o]:
         if o_key_released and points_counter > 0:
             o_key_pressed = True
-            refresh()
+            level, points_counter, gold_list = refresh(level, points_counter, gold_list)
             o_key_released = False
         else:
             o_key_pressed = False
@@ -1663,7 +1694,7 @@ while run:
     if keys[pygame.K_u]:
         if u_key_released and points_counter >= 2:
             u_key_pressed = True
-            reeload()
+            magazine, points_counter = reeload(magazine, points_counter)
             u_key_released = False
         else:
             u_key_pressed = False
@@ -1702,9 +1733,9 @@ while run:
     # and change player possition to left side to make immersion
     if right.color == (0, 255, 0) and player1_rect.colliderect(right.rect):
         background = random_background()
-        generate_new_obstacles()
-        generate_new_gold()
-        generate_new_enemy()
+        obstacles_list = generate_new_obstacles(obstacles_list)
+        gold_list = generate_new_gold(gold_list)
+        enemy_list = generate_new_enemy()
         bullet_fired = True
         right.color = (255, 0, 0)
         x = 0
@@ -1732,7 +1763,7 @@ while run:
         if x == 0:
             load_boss = True
         if load_boss is True:
-            boss_list = boss()
+            boss_list, bs = boss(boss_list, bs)
             load_boss = False
         if bs is True:
             # playing boss level music
@@ -1778,9 +1809,9 @@ while run:
                     stop_sound(boss_sound)
                     boss_hp = 50
                     background = random_background()
-                    generate_new_obstacles()
-                    generate_new_gold()
-                    generate_new_enemy()
+                    obstacles_list = generate_new_obstacles(obstacles_list)
+                    gold_list = generate_new_gold(gold_list)
+                    enemy_list = generate_new_enemy()
                     bullet_fired = True
                     right.color = (255, 0, 0)
                     x = 0
@@ -1789,10 +1820,47 @@ while run:
                 player_death_sound.play()
                 death_animation(player_dead_animation, x, y)
                 time.sleep(1)
-                deadscreen()
-                generate_new_enemy()
-                generate_new_gold()
-                generate_new_obstacles()
+                (
+                    best_score,
+                    level,
+                    points_counter,
+                    number_devils,
+                    number_fasts,
+                    number_mutants,
+                    number_ghosts,
+                    number_obstacles,
+                    powershield,
+                    speed,
+                    magazine,
+                    background,
+                    gun_on,
+                ) = deadscreen(
+                    best_score,
+                    level,
+                    points_counter,
+                    number_devils,
+                    number_fasts,
+                    number_mutants,
+                    number_ghosts,
+                    number_obstacles,
+                    powershield,
+                    speed,
+                    magazine,
+                    background,
+                    gun_on,
+                    max_obstacles,
+                    enemies_killed,
+                    destroyed_obstacles,
+                    bosses_killed,
+                    devils_killed,
+                    fasts_killed,
+                    mutants_killed,
+                    ghosts_killed,
+                    gold_counter,
+                )
+                enemy_list = generate_new_enemy()
+                gold_list = generate_new_gold(gold_list)
+                obstacles_list = generate_new_obstacles(obstacles_list)
                 pygame.mixer.music.stop()
                 pygame.mixer.music.load("client/game/sounds/music.mp3")
                 pygame.mixer.music.set_volume(0.4)
@@ -1859,7 +1927,7 @@ while run:
             player1_rect = pygame.rect.Rect(x, y, 40, 40)
 
     # show level coins bullets
-    status()
+    status(boss_hp)
 
     """when player press space and any bullet flying in this moment and
     player have bullets and holds his gun create bullet adapte to bullet direction"""
@@ -1948,10 +2016,47 @@ while run:
                 player_death_sound.play()
                 death_animation(player_dead_animation, x, y)
                 time.sleep(1)
-                deadscreen()
-                generate_new_enemy()
-                generate_new_gold()
-                generate_new_obstacles()
+                (
+                    best_score,
+                    level,
+                    points_counter,
+                    number_devils,
+                    number_fasts,
+                    number_mutants,
+                    number_ghosts,
+                    number_obstacles,
+                    powershield,
+                    speed,
+                    magazine,
+                    background,
+                    gun_on,
+                ) = deadscreen(
+                    best_score,
+                    level,
+                    points_counter,
+                    number_devils,
+                    number_fasts,
+                    number_mutants,
+                    number_ghosts,
+                    number_obstacles,
+                    powershield,
+                    speed,
+                    magazine,
+                    background,
+                    gun_on,
+                    max_obstacles,
+                    enemies_killed,
+                    destroyed_obstacles,
+                    bosses_killed,
+                    devils_killed,
+                    fasts_killed,
+                    mutants_killed,
+                    ghosts_killed,
+                    gold_counter,
+                )
+                enemy_list = generate_new_enemy()
+                gold_list = generate_new_gold(gold_list)
+                obstacles_list = generate_new_obstacles(obstacles_list)
                 pygame.mixer.music.stop()
                 pygame.mixer.music.load("client/game/sounds/music.mp3")
                 pygame.mixer.music.set_volume(0.4)
@@ -1976,7 +2081,7 @@ while run:
                     mutants_killed = +1
                     mutant_death_sound.play()
                     death_animation(
-                        mutant_bullet_dead_animation, enemy.rect.x, enemy.rect.y
+                        mutant_shield_dead_animation, enemy.rect.x, enemy.rect.y
                     )
 
                 elif enemy.type == "ghost":
@@ -2049,7 +2154,7 @@ while run:
                         mutants_killed = +1
                         mutant_death_sound.play()
                         death_animation(
-                            mutant_shield_dead_animation, enemy.rect.x, enemy.rect.y
+                            mutant_bullet_dead_animation, enemy.rect.x, enemy.rect.y
                         )
                         number_mutants -= 1
                     elif enemy.type == "ghost":
@@ -2068,25 +2173,25 @@ while run:
 
     # generate new enemies when boss hp run below static values
     if boss_hp == 40:
-        generate_new_enemy()
+        enemy_list = generate_new_enemy()
         boss_hp = 39
         for enemy in enemy_list:
             death_animation(devil_dead_animation, enemy.rect.x, enemy.rect.y)
 
     if boss_hp == 30:
-        generate_new_enemy()
+        enemy_list = generate_new_enemy()
         boss_hp = 29
         for enemy in enemy_list:
             death_animation(devil_dead_animation, enemy.rect.x, enemy.rect.y)
 
     if boss_hp == 20:
-        generate_new_enemy()
+        enemy_list = generate_new_enemy()
         boss_hp = 19
         for enemy in enemy_list:
             death_animation(devil_dead_animation, enemy.rect.x, enemy.rect.y)
 
     if boss_hp == 10:
-        generate_new_enemy()
+        enemy_list = generate_new_enemy()
         boss_hp = 9
         for enemy in enemy_list:
             death_animation(devil_dead_animation, enemy.rect.x, enemy.rect.y)
