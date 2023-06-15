@@ -94,8 +94,8 @@ class Connection:
                 self.stats, key=lambda x: x["fields"]["best_score"], reverse=True
             )
             output = ""
-            for i in sorted_stats:
-                output += f"{i['fields']['username']}: {i['fields']['best_score']}\n"
+            for sorts in sorted_stats:
+                output += f"{sorts['fields']['username']}: {sorts['fields']['best_score']}\n"  # noqa: E501
             return output
         return f"Error {self.response.status_code}, please contact the administrator at https://github.com/0lch4"
 
@@ -142,18 +142,18 @@ class Connection:
             self.stats = json.loads(self.stats)
             output = ""
             # return data to main app
-            for i in self.stats:
+            for stat in self.stats:
                 output += (
-                    f"Username: {i['fields']['username']}\n"
-                    f"Levels Compleat: {i['fields']['all_levels']}\n"
-                    f"Golds Earned: {i['fields']['all_gold']}\n"
-                    f"Enemies Killed: {i['fields']['enemies_killed']}\n"
-                    f"Destroyed Obstacles: {i['fields']['destroyed_obstacles']}\n"
-                    f"Bosses Killed: {i['fields']['bosses_killed']}\n"
-                    f"Devils Killed: {i['fields']['devils_killed']}\n"
-                    f"Fasts Killed: {i['fields']['fasts_killed']}\n"
-                    f"Mutants Killed: {i['fields']['mutants_killed']}\n"
-                    f"Ghosts Killed: {i['fields']['ghosts_killed']}\n\n"
+                    f"Username: {stat['fields']['username']}\n"
+                    f"Levels Compleat: {stat['fields']['all_levels']}\n"
+                    f"Golds Earned: {stat['fields']['all_gold']}\n"
+                    f"Enemies Killed: {stat['fields']['enemies_killed']}\n"
+                    f"Destroyed Obstacles: {stat['fields']['destroyed_obstacles']}\n"
+                    f"Bosses Killed: {stat['fields']['bosses_killed']}\n"
+                    f"Devils Killed: {stat['fields']['devils_killed']}\n"
+                    f"Fasts Killed: {stat['fields']['fasts_killed']}\n"
+                    f"Mutants Killed: {stat['fields']['mutants_killed']}\n"
+                    f"Ghosts Killed: {stat['fields']['ghosts_killed']}\n\n"
                 )
 
             return output

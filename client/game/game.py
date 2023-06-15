@@ -1030,7 +1030,7 @@ class Border:
 
 
 # add borders to border list
-def borders(borders_list:list[Any]) -> list[Any]:
+def borders(borders_list: list[Any]) -> list[Any]:
     up = Border(1, 1, window_width, 1)
     borders_list.append(up)
 
@@ -1525,7 +1525,7 @@ def status(boss_hp: int) -> None:
     if background == background4:
         boss_hp_str = "l" * boss_hp
         boss_hp_text = font.render(boss_hp_str, True, (255, 0, 0))
-        window.blit(boss_hp_text, (window_width//3, window_height-80))
+        window.blit(boss_hp_text, (window_width // 3, window_height - 80))
 
 
 # save player stats to json file
