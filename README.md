@@ -34,6 +34,12 @@ In next step enter in main project location:
 poetry install
 ```
 
+Finally, activate your environment:
+
+```
+poetry shell
+```
+
 ## Font installation
 
 Go to the 
