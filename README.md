@@ -1,4 +1,4 @@
-# Dark-forest-client ![GitHub forks](https://img.shields.io/badge/Version-1.4.2-red)
+# Dark-forest-client ![GitHub forks](https://img.shields.io/badge/Version-1.4.3-red)
 
 # Description
 
@@ -13,10 +13,6 @@ Application is licensed under the MIT License.
 # Instalation
 
 ## Windows
-
-## [Client instalator](https://drive.google.com/drive/folders/1VaAz0Dw-3dUOMgjF_Wv8NaGZLofEAw8w?usp=sharing)
-
-## Manual instalation
 
 ## Copying the repository
 
@@ -52,7 +48,7 @@ client/client/game/font/Snap.ttf
 ``` 
 Click on it and download
 
-## Distributions based on Arch linux
+## Distributions based on Arch Linux
 
 You have to use `poetry` to install liblaries:
 
