@@ -10,11 +10,11 @@ You have to try survive the most number of levels. Before going to the next leve
 
 Application is licensed under the MIT License.
 
-# ![GitHub forks](https://img.shields.io/badge/Windows-0078D6?style=for-the-badge&logo=windows&logoColor=white) [Client instalator](https://drive.google.com/drive/folders/1VaAz0Dw-3dUOMgjF_Wv8NaGZLofEAw8w?usp=sharing)
+# [Client instalator](https://drive.google.com/drive/folders/1VaAz0Dw-3dUOMgjF_Wv8NaGZLofEAw8w?usp=sharing) ![GitHub forks](https://img.shields.io/badge/Windows-0078D6?style=for-the-badge&logo=windows&logoColor=white)
 
 # Manual Instalation
 
-## ![GitHub forks](https://img.shields.io/badge/Windows-0078D6?style=for-the-badge&logo=windows&logoColor=white) Windows 10
+## Windows 10 ![GitHub forks](https://img.shields.io/badge/Windows-0078D6?style=for-the-badge&logo=windows&logoColor=white)
 
 
 ## Copying the repository
@@ -51,7 +51,7 @@ client/client/game/font/Snap.ttf
 ``` 
 Click on it and download
 
-## ![GitHub forks](https://img.shields.io/badge/Linux-FCC624?style=for-the-badge&logo=linux&logoColor=black) EndeavourOS
+## EndeavourOS ![GitHub forks](https://img.shields.io/badge/Linux-FCC624?style=for-the-badge&logo=linux&logoColor=black)
 
 You have to use `poetry` to install liblaries:
 
