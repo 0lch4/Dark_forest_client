@@ -12,7 +12,7 @@ Application is licensed under the MIT License.
 
 # Instalation
 
-## ![GitHub forks](https://img.shields.io/badge/Windows-0078D6?style=for-the-badge&logo=windows&logoColor=white)
+## Windows
 
 ## [Client instalator](https://drive.google.com/drive/folders/1VaAz0Dw-3dUOMgjF_Wv8NaGZLofEAw8w?usp=sharing)
 
@@ -52,7 +52,7 @@ client/client/game/font/Snap.ttf
 ``` 
 Click on it and download
 
-## ![GitHub forks](https://img.shields.io/badge/Arch_Linux-1793D1?style=for-the-badge&logo=arch-linux&logoColor=white)
+## Distributions based on Arch linux
 
 You have to use `poetry` to install liblaries:
 
@@ -89,7 +89,6 @@ In the next step:
 
 ```
 fc-cache -fv
-
 ```
 
 # Usage
