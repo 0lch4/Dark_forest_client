@@ -14,6 +14,9 @@ Application is licensed under the MIT License.
 
 # Manual Instalation
 
+## Windows
+
+
 ## Copying the repository
 
 ```
@@ -39,6 +42,33 @@ Finally, activate your environment:
 ```
 poetry shell
 ```
+
+## Linux 
+
+You have to use `poetry` to install liblaries:
+
+```
+pipx install poetry
+```
+
+On linux pygame have problems so install it witch packet manager
+
+```
+sudo pacman -S python-pygame
+```
+
+In next step enter in main project location:
+
+```
+pipx run poetry install
+```
+
+Finally, activate your environment:
+
+```
+pipx run poetry shell
+```
+
 
 ## Font installation
 
