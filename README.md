@@ -79,7 +79,7 @@ pipx run poetry shell
 Enter in main project location:
 
 ```
-sudo cp client/game/font.snap.ttf /usr/share/fonts/TTF
+sudo cp client/game/font/snap.ttf /usr/share/fonts/TTF
 ``` 
 In the next step:
 
