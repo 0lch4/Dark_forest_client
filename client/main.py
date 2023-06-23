@@ -5,11 +5,11 @@ import subprocess
 from tkinter import ttk, font
 import pygame
 from typing import Any
+import platform
 
 width = 1920
 height = 1080
 bright = 0
-
 
 # playin background music
 def play_background_music() -> None:
@@ -409,7 +409,15 @@ def start() -> None:  # noqa: PLR0915
 
 # launch the game
 def play(username: str, password: str, width_game: int, height_game: int) -> None:
+    if platform.system() == "Windows":
+        noconsole = subprocess.CREATE_NO_WINDOW
+    if platform.system() == "Linux":
+        noconsole = 0
+
     stop_background_music()
+
+    creationflags = noconsole if platform.system() == "Windows" else 0
+
     subprocess.run(
         [  # noqa: S603, S607
             "python",
@@ -421,7 +429,7 @@ def play(username: str, password: str, width_game: int, height_game: int) -> Non
             str(height_game),
             str(bright),
         ],
-        creationflags=subprocess.CREATE_NO_WINDOW,
+        creationflags=creationflags,
     )
 
 
