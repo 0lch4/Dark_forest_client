@@ -10,11 +10,11 @@ You have to try survive the most number of levels. Before going to the next leve
 
 Application is licensed under the MIT License.
 
-# [Client instalator](https://drive.google.com/drive/folders/1VaAz0Dw-3dUOMgjF_Wv8NaGZLofEAw8w?usp=sharing) ![GitHub forks](https://img.shields.io/badge/Windows-0078D6?style=for-the-badge&logo=windows&logoColor=white)
+# ![GitHub forks](https://img.shields.io/badge/Windows-0078D6?style=for-the-badge&logo=windows&logoColor=white) [Client instalator](https://drive.google.com/drive/folders/1VaAz0Dw-3dUOMgjF_Wv8NaGZLofEAw8w?usp=sharing)
 
 # Manual Instalation
 
-## Windows ![GitHub forks](https://img.shields.io/badge/Windows-0078D6?style=for-the-badge&logo=windows&logoColor=white)
+## ![GitHub forks](https://img.shields.io/badge/Windows-0078D6?style=for-the-badge&logo=windows&logoColor=white) Windows 10
 
 
 ## Copying the repository
@@ -43,7 +43,15 @@ Finally, activate your environment:
 poetry shell
 ```
 
-## Linux ![GitHub forks](https://img.shields.io/badge/Linux-FCC624?style=for-the-badge&logo=linux&logoColor=black)
+## Font installation
+
+Go to the 
+```
+client/client/game/font/Snap.ttf
+``` 
+Click on it and download
+
+## ![GitHub forks](https://img.shields.io/badge/Linux-FCC624?style=for-the-badge&logo=linux&logoColor=black) EndeavourOS
 
 You have to use `poetry` to install liblaries:
 
@@ -69,14 +77,19 @@ Finally, activate your environment:
 pipx run poetry shell
 ```
 
-
 ## Font installation
 
-Go to the 
+Enter in main project location:
+
 ```
-client/client/game/font/Snap.ttf
+sudo cp client/game/font.snap.ttf /usr/share/fonts/TTF
 ``` 
-Click on it and download
+In the next step:
+
+```
+fc-cache -fv
+
+```
 
 # Usage
 
