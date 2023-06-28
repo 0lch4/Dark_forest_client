@@ -6,7 +6,6 @@ import math
 from pathlib import Path
 from typing import Any
 import pygame
-
 from client.connection.server_connection_logic import Connection
 from abc import ABC, abstractmethod
 
@@ -792,7 +791,7 @@ def deadscreen(  # noqa PLR0913
     )
     window.blit(points_text, (window_width / 4 - 80, window_height / 4))
 
-    statistics = stats(statistics,statistics_reset, best_score)
+    statistics = stats(statistics, statistics_reset, best_score)
 
     verification.update_best_score(username)
     verification.update_stats(username)
