@@ -6,52 +6,48 @@ import math
 from pathlib import Path
 from typing import Any
 import pygame
-#from client.connection.server_connection_logic import Connection
+
+from client.connection.server_connection_logic import Connection
 from abc import ABC, abstractmethod
 
-# # verify player and set resolution, default is fhd
-# try:
-#     username = sys.argv[1]
-#     password = sys.argv[2]
-#     window_width = int(sys.argv[3])
-#     window_height = int(sys.argv[4])
-#     bright = int(sys.argv[5])
-# except IndexError:
-#     sys.exit()
+# verify player and set resolution, default is fhd
+try:
+    username = sys.argv[1]
+    password = sys.argv[2]
+    window_width = int(sys.argv[3])
+    window_height = int(sys.argv[4])
+    bright = int(sys.argv[5])
+except IndexError:
+    sys.exit()
 
-# verification = Connection(username, password)
-# verification.login()
+verification = Connection(username, password)
+verification.login()
 
-# # stats file are created separately for each user
-# folder_path = Path.cwd() / "client/game/stats" / username
-# folder_path.mkdir(parents=True, exist_ok=True)
+# stats file are created separately for each user
+folder_path = Path.cwd() / "client/game/stats" / username
+folder_path.mkdir(parents=True, exist_ok=True)
 
-# stats_file_path = folder_path / "stats.json"
+stats_file_path = folder_path / "stats.json"
 
-# if not stats_file_path.exists():
-#     initial_data = {
-#         "all_levels": 0,
-#         "all_gold": 0,
-#         "enemies_killed": 0,
-#         "destroyed_obstacles": 0,
-#         "bosses_killed": 0,
-#         "devils_killed": 0,
-#         "fasts_killed": 0,
-#         "mutants_killed": 0,
-#         "ghosts_killed": 0,
-#         "best_score": 0,
-#     }
-#     with stats_file_path.open("w") as stats_file:
-#         json.dump(initial_data, stats_file, indent=4)
+if not stats_file_path.exists():
+    initial_data = {
+        "all_levels": 0,
+        "all_gold": 0,
+        "enemies_killed": 0,
+        "destroyed_obstacles": 0,
+        "bosses_killed": 0,
+        "devils_killed": 0,
+        "fasts_killed": 0,
+        "mutants_killed": 0,
+        "ghosts_killed": 0,
+        "best_score": 0,
+    }
+    with stats_file_path.open("w") as stats_file:
+        json.dump(initial_data, stats_file, indent=4)
 
-# verification.load_data_to_local()
+verification.load_data_to_local()
 
 
-bright=0
-window_height=1080
-window_width=1920
-username="test"
-# initiation pygame
 pygame.init()  # ruff: noqa: FBT003
 # mouse disable
 pygame.mouse.set_visible(False)  # ruff: noqa: FBT003
@@ -63,10 +59,10 @@ font = pygame.font.Font(None, 36)
 x = 0
 y = 0
 # gold
-points_counter = 10
-gold_counter = 0
+points_counter = 0
+best_score = 0
 # level
-level = 48
+level = 0
 # number of enemies when game started
 number_devils = 0
 number_fasts = 0
@@ -106,15 +102,18 @@ bs = False
 # load boss only in boss level
 load_boss = False
 # player stats
-enemies_killed = 0
-destroyed_obstacles = 0
-bosses_killed = 0
-best_score = 0
-devils_killed = 0
-fasts_killed = 0
-mutants_killed = 0
-ghosts_killed = 0
+statistics = {
+    "gold_counter": 0,
+    "enemies_killed": 0,
+    "destroyed_obstacles": 0,
+    "bosses_killed": 0,
+    "devils_killed": 0,
+    "fasts_killed": 0,
+    "mutants_killed": 0,
+    "ghosts_killed": 0,
+}
 
+statistics_reset = statistics.copy()
 # lists
 destroyed_obstacles_list = []
 bullets_list = []
@@ -327,7 +326,7 @@ devil_texture = pygame.transform.scale(
 )
 # devil rect
 devil_rect = devil_texture.get_rect()
-# devil death animation (killed by shield)
+# devil death animation (killed by shield)-
 devil_dead_animation = [
     pygame.transform.scale(
         pygame.image.load("client/game/textures/devildead1.png"),
@@ -661,6 +660,7 @@ shield_sound.set_volume(0.5)
 refresh_sound = pygame.mixer.Sound("client/game/sounds/refresh.mp3")
 refresh_sound.set_volume(0.5)
 
+
 class Object(ABC):
     def __init__(self, x: int, y: int, width: int, height: int) -> None:
         self.rect = pygame.Rect(x, y, width, height)
@@ -672,6 +672,7 @@ class Object(ABC):
     @abstractmethod
     def delete(self) -> None:
         pass
+
 
 # algorithm for scaling number of obstacles to player resolution
 def screen_scaling(number_obstacles: int, max_obstacles: int) -> int:
@@ -714,36 +715,35 @@ def stop_sound(sound: Any) -> None:
 # game intro
 def start() -> None:
     pass
-    # # shows all intro slaids and play intro music refresh screen beetween intro slaids
-    # window.blit(olchastudio, (1, 1))
-    # intro_sound.play()
-    # pygame.display.update()
-    # time.sleep(4.4)
-    # window.blit(intro1, (1, 1))
-    # pygame.display.update()
-    # time.sleep(2.4)
-    # window.blit(intro2, (1, 1))
-    # pygame.display.update()
-    # time.sleep(4.6)
-    # window.blit(intro3, (1, 1))
-    # pygame.display.update()
-    # time.sleep(4)
-    # window.blit(menu, (1, 1))
-    # pygame.display.update()
-    # waiting = True
-    # # game was started when player press space
-    # while waiting:
-    #     play_sound(intro_sound)
-    #     for _ in pygame.event.get():
-    #         keys = pygame.key.get_pressed()
-    #         if keys[pygame.K_SPACE]:
-    #             waiting = False
-    #             stop_sound(intro_sound)
+    # shows all intro slaids and play intro music refresh screen beetween intro slaids
+    window.blit(olchastudio, (1, 1))
+    intro_sound.play()
+    pygame.display.update()
+    time.sleep(4.4)
+    window.blit(intro1, (1, 1))
+    pygame.display.update()
+    time.sleep(2.4)
+    window.blit(intro2, (1, 1))
+    pygame.display.update()
+    time.sleep(4.6)
+    window.blit(intro3, (1, 1))
+    pygame.display.update()
+    time.sleep(4)
+    window.blit(menu, (1, 1))
+    pygame.display.update()
+    waiting = True
+    # game was started when player press space
+    while waiting:
+        play_sound(intro_sound)
+        for _ in pygame.event.get():
+            keys = pygame.key.get_pressed()
+            if keys[pygame.K_SPACE]:
+                waiting = False
+                stop_sound(intro_sound)
 
 
 # deadscreen
-def deadscreen(  # noqa: PLR0915, PLR0913
-    best_score: int,
+def deadscreen(  # noqa PLR0913
     level: int,
     points_counter: int,
     number_devils: int,
@@ -756,15 +756,9 @@ def deadscreen(  # noqa: PLR0915, PLR0913
     magazine: int,
     background: pygame.Surface,
     gun_on: Any,
+    statistics: dict,
+    best_score: int,
     max_obstacles: int,
-    enemies_killed: int,
-    destroyed_obstacles: int,
-    bosses_killed: int,
-    devils_killed: int,
-    fasts_killed: int,
-    mutants_killed: int,
-    ghosts_killed: int,
-    gold_counter: int,
 ) -> int | Any | pygame.Surface:
     waiting = True
     w8 = True
@@ -798,29 +792,10 @@ def deadscreen(  # noqa: PLR0915, PLR0913
     )
     window.blit(points_text, (window_width / 4 - 80, window_height / 4))
 
-    (
-        enemies_killed,
-        destroyed_obstacles,
-        bosses_killed,
-        devils_killed,
-        fasts_killed,
-        mutants_killed,
-        ghosts_killed,
-        gold_counter,
-        best_score,
-    ) = stats(
-        enemies_killed,
-        destroyed_obstacles,
-        bosses_killed,
-        devils_killed,
-        fasts_killed,
-        mutants_killed,
-        ghosts_killed,
-        gold_counter,
-        best_score,
-    )
-    #verification.update_best_score(username)
-    #verification.update_stats(username)
+    statistics = stats(statistics,statistics_reset, best_score)
+
+    verification.update_best_score(username)
+    verification.update_stats(username)
     pygame.display.update()
     # when player press space stop showing scores and go into menu
     while waiting:  # noqa: RET503
@@ -869,6 +844,7 @@ def deadscreen(  # noqa: PLR0915, PLR0913
                                 magazine,
                                 background,
                                 gun_on,
+                                statistics,
                             )
             # if player press escape the game is closed
             elif keys[pygame.K_ESCAPE]:
@@ -1031,6 +1007,7 @@ def reeload(magazine: int, points_counter: int) -> int:
     time.sleep(1)
     return magazine, points_counter
 
+
 # border class
 class Border(Object):
     def __init__(  # noqa: PLR0913
@@ -1039,7 +1016,7 @@ class Border(Object):
         y: int,
         width: int,
         height: int,
-        color: tuple[int,int,int] = (255, 0, 0),
+        color: tuple[int, int, int] = (255, 0, 0),
     ) -> None:
         super().__init__(x, y, width, height)
         self.color = color
@@ -1047,7 +1024,7 @@ class Border(Object):
     def draw(self, surface: pygame.Surface) -> None:
         pygame.draw.rect(surface, self.color, self.rect)
 
-    def delete(self)->None:
+    def delete(self) -> None:
         pass
 
 
@@ -1197,8 +1174,6 @@ class Enemy(Object):
                 self.rect = self.prev_pos
                 break
 
-
-
     # enemies are moving randomly
     def change_direction(self) -> None:
         directions = [(1, 0), (-1, 0), (0, 1), (0, -1)]
@@ -1330,7 +1305,7 @@ class Bullet(Object):
         direction: Any,
         texture: Any,
     ) -> None:
-        super().__init__(x,y,width,height)
+        super().__init__(x, y, width, height)
         self.speed = speed
         self.direction = direction
         self.texture = texture
@@ -1369,7 +1344,9 @@ class Boss(Enemy):
         speed: int,
         collision: Any,
     ) -> None:
-        super().__init__(x, y, width, height,texture,speed,collision,enemy_type=None)
+        super().__init__(
+            x, y, width, height, texture, speed, collision, enemy_type=None
+        )
         self.direction = (1, 0)
         self.mask = pygame.mask.from_surface(texture)
         self.prev_pos = self.rect.copy()
@@ -1394,7 +1371,6 @@ class Boss(Enemy):
             offset = (self.rect.x - enemies.rect.x, self.rect.y - enemies.rect.y)
             if enemies.mask.overlap(mask, offset):
                 enemies.rect = enemies.prev_pos
-
 
     def draw(self, surface: pygame.Surface) -> None:
         surface.blit(self.texture, self.rect)
@@ -1538,16 +1514,8 @@ def status(boss_hp: int) -> None:
 
 
 # save player stats to json file
-def stats(  # noqa: PLR0913
-    enemies_killed: int,
-    destroyed_obstacles: int,
-    bosses_killed: int,
-    devils_killed: int,
-    fasts_killed: int,
-    mutants_killed: int,
-    ghosts_killed: int,
-    gold_counter: int,
-    best_score: int,
+def stats(
+    statistics: dict[str, int], statistics_reset: dict[str, int], best_score: int
 ) -> None:
     file_path = Path(f"client/game/stats/{username}/stats.json")
     with file_path.open(mode="r") as f:
@@ -1555,41 +1523,24 @@ def stats(  # noqa: PLR0913
 
     new_stats = {
         "all_levels": level + int(old_stats["all_levels"]),
-        "all_gold": gold_counter + int(old_stats["all_gold"]),
-        "enemies_killed": enemies_killed + int(old_stats["enemies_killed"]),
-        "destroyed_obstacles": destroyed_obstacles
+        "all_gold": statistics["gold_counter"] + int(old_stats["all_gold"]),
+        "enemies_killed": statistics["enemies_killed"]
+        + int(old_stats["enemies_killed"]),
+        "destroyed_obstacles": statistics["destroyed_obstacles"]
         + int(old_stats["destroyed_obstacles"]),
-        "bosses_killed": bosses_killed + int(old_stats["bosses_killed"]),
-        "devils_killed": devils_killed + int(old_stats["devils_killed"]),
-        "fasts_killed": fasts_killed + int(old_stats["fasts_killed"]),
-        "mutants_killed": mutants_killed + int(old_stats["mutants_killed"]),
-        "ghosts_killed": ghosts_killed + int(old_stats["ghosts_killed"]),
+        "bosses_killed": statistics["bosses_killed"] + int(old_stats["bosses_killed"]),
+        "devils_killed": statistics["devils_killed"] + int(old_stats["devils_killed"]),
+        "fasts_killed": statistics["fasts_killed"] + int(old_stats["fasts_killed"]),
+        "mutants_killed": statistics["mutants_killed"]
+        + int(old_stats["mutants_killed"]),
+        "ghosts_killed": statistics["ghosts_killed"] + int(old_stats["ghosts_killed"]),
         "best_score": best_score,
     }
     file_path = Path(f"client/game/stats/{username}/stats.json")
     with file_path.open(mode="w") as f:
         json.dump(new_stats, f, indent=4)
 
-    enemies_killed = 0
-    destroyed_obstacles = 0
-    bosses_killed = 0
-    devils_killed = 0
-    fasts_killed = 0
-    mutants_killed = 0
-    ghosts_killed = 0
-    gold_counter = 0
-
-    return (
-        enemies_killed,
-        destroyed_obstacles,
-        bosses_killed,
-        devils_killed,
-        fasts_killed,
-        mutants_killed,
-        ghosts_killed,
-        gold_counter,
-        best_score,
-    )
+    return statistics_reset
 
 
 # load start od the game and play game music
@@ -1736,7 +1687,7 @@ while run:
         if player1_rect.colliderect(gold.rect):
             gold_sound.play()
             points_counter += 1
-            gold_counter += 1
+            statistics["gold_counter"] += 1
             right.color = (0, 255, 0)
             gold_list.remove(gold)
 
@@ -1814,7 +1765,7 @@ while run:
                 pygame.mixer.music.load("client/game/sounds/music.mp3")
                 pygame.mixer.music.set_volume(0.4)
                 pygame.mixer.music.play(-1)
-                bosses_killed += 1
+                statistics["bosses_killed"] += 1
                 # load new level when player touch right border after killed boss
                 if right.color == (0, 255, 0) and player1_rect.colliderect(right.rect):
                     stop_sound(boss_sound)
@@ -1845,8 +1796,8 @@ while run:
                     magazine,
                     background,
                     gun_on,
+                    statistics,
                 ) = deadscreen(
-                    best_score,
                     level,
                     points_counter,
                     number_devils,
@@ -1859,15 +1810,9 @@ while run:
                     magazine,
                     background,
                     gun_on,
+                    statistics,
+                    best_score,
                     max_obstacles,
-                    enemies_killed,
-                    destroyed_obstacles,
-                    bosses_killed,
-                    devils_killed,
-                    fasts_killed,
-                    mutants_killed,
-                    ghosts_killed,
-                    gold_counter,
                 )
                 enemy_list = generate_new_enemy()
                 gold_list = generate_new_gold(gold_list)
@@ -2041,8 +1986,8 @@ while run:
                     magazine,
                     background,
                     gun_on,
+                    statistics,
                 ) = deadscreen(
-                    best_score,
                     level,
                     points_counter,
                     number_devils,
@@ -2055,15 +2000,9 @@ while run:
                     magazine,
                     background,
                     gun_on,
+                    statistics,
+                    best_score,
                     max_obstacles,
-                    enemies_killed,
-                    destroyed_obstacles,
-                    bosses_killed,
-                    devils_killed,
-                    fasts_killed,
-                    mutants_killed,
-                    ghosts_killed,
-                    gold_counter,
                 )
                 enemy_list = generate_new_enemy()
                 gold_list = generate_new_gold(gold_list)
@@ -2079,24 +2018,24 @@ while run:
             elif powershield is True:
                 enemy.killed_by = "shield"
                 if enemy.type == "fast":
-                    fasts_killed = +1
+                    statistics["fasts_killed"] = +1
                     fast_death_sound.play()
                     death_animation(fast_dead_animation, enemy.rect.x, enemy.rect.y)
 
                 elif enemy.type == "devil":
-                    devils_killed = +1
+                    statistics["devils_killed"] = +1
                     devil_death_sound.play()
                     death_animation(devil_dead_animation, enemy.rect.x, enemy.rect.y)
 
                 elif enemy.type == "mutant":
-                    mutants_killed = +1
+                    statistics["mutants_killed"] = +1
                     mutant_death_sound.play()
                     death_animation(
                         mutant_shield_dead_animation, enemy.rect.x, enemy.rect.y
                     )
 
                 elif enemy.type == "ghost":
-                    ghosts_killed = +1
+                    statistics["ghosts_killed"] = +1
                     ghost_death_sound.play()
                     death_animation(ghost_dead_animation, enemy.rect.x, enemy.rect.y)
 
@@ -2131,7 +2070,7 @@ while run:
             # when bullet touch obstacle destroy it
             for obstacle in obstacles_list:
                 if bullet.rect.colliderect(obstacle.rect):
-                    destroyed_obstacles += 1
+                    statistics["destroyed_obstacles"] += 1
                     destruction_sound.play()
                     # bullet explosion animation
                     death_animation(bullet_boom_list, bullet.rect.x, bullet.rect.y)
@@ -2145,7 +2084,7 @@ while run:
             # when bullet touch enemy kill him
             for enemy in enemy_list:
                 if bullet.rect.colliderect(enemy.rect):
-                    enemies_killed += 1
+                    statistics["enemies_killed"] += 1
                     enemy.killed_by = "bullet"
                     if enemy.type == "fast":
                         fasts_killed = +1
