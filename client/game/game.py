@@ -6,45 +6,51 @@ import math
 from pathlib import Path
 from typing import Any
 import pygame
-from client.connection.server_connection_logic import Connection
+#from client.connection.server_connection_logic import Connection
+from abc import ABC, abstractmethod
 
-# verify player and set resolution, default is fhd
-try:
-    username = sys.argv[1]
-    password = sys.argv[2]
-    window_width = int(sys.argv[3])
-    window_height = int(sys.argv[4])
-    bright = int(sys.argv[5])
-except IndexError:
-    sys.exit()
+# # verify player and set resolution, default is fhd
+# try:
+#     username = sys.argv[1]
+#     password = sys.argv[2]
+#     window_width = int(sys.argv[3])
+#     window_height = int(sys.argv[4])
+#     bright = int(sys.argv[5])
+# except IndexError:
+#     sys.exit()
 
-verification = Connection(username, password)
-verification.login()
+# verification = Connection(username, password)
+# verification.login()
 
-# stats file are created separately for each user
-folder_path = Path.cwd() / "client/game/stats" / username
-folder_path.mkdir(parents=True, exist_ok=True)
+# # stats file are created separately for each user
+# folder_path = Path.cwd() / "client/game/stats" / username
+# folder_path.mkdir(parents=True, exist_ok=True)
 
-stats_file_path = folder_path / "stats.json"
+# stats_file_path = folder_path / "stats.json"
 
-if not stats_file_path.exists():
-    initial_data = {
-        "all_levels": 0,
-        "all_gold": 0,
-        "enemies_killed": 0,
-        "destroyed_obstacles": 0,
-        "bosses_killed": 0,
-        "devils_killed": 0,
-        "fasts_killed": 0,
-        "mutants_killed": 0,
-        "ghosts_killed": 0,
-        "best_score": 0,
-    }
-    with stats_file_path.open("w") as stats_file:
-        json.dump(initial_data, stats_file, indent=4)
+# if not stats_file_path.exists():
+#     initial_data = {
+#         "all_levels": 0,
+#         "all_gold": 0,
+#         "enemies_killed": 0,
+#         "destroyed_obstacles": 0,
+#         "bosses_killed": 0,
+#         "devils_killed": 0,
+#         "fasts_killed": 0,
+#         "mutants_killed": 0,
+#         "ghosts_killed": 0,
+#         "best_score": 0,
+#     }
+#     with stats_file_path.open("w") as stats_file:
+#         json.dump(initial_data, stats_file, indent=4)
 
-verification.load_data_to_local()
+# verification.load_data_to_local()
 
+
+bright=0
+window_height=1080
+window_width=1920
+username="test"
 # initiation pygame
 pygame.init()  # ruff: noqa: FBT003
 # mouse disable
@@ -57,10 +63,10 @@ font = pygame.font.Font(None, 36)
 x = 0
 y = 0
 # gold
-points_counter = 0
+points_counter = 10
 gold_counter = 0
 # level
-level = 0
+level = 48
 # number of enemies when game started
 number_devils = 0
 number_fasts = 0
@@ -655,6 +661,17 @@ shield_sound.set_volume(0.5)
 refresh_sound = pygame.mixer.Sound("client/game/sounds/refresh.mp3")
 refresh_sound.set_volume(0.5)
 
+class Object(ABC):
+    def __init__(self, x: int, y: int, width: int, height: int) -> None:
+        self.rect = pygame.Rect(x, y, width, height)
+
+    @abstractmethod
+    def draw(self) -> None:
+        pass
+
+    @abstractmethod
+    def delete(self) -> None:
+        pass
 
 # algorithm for scaling number of obstacles to player resolution
 def screen_scaling(number_obstacles: int, max_obstacles: int) -> int:
@@ -696,31 +713,32 @@ def stop_sound(sound: Any) -> None:
 
 # game intro
 def start() -> None:
-    # shows all intro slaids and play intro music refresh screen beetween intro slaids
-    window.blit(olchastudio, (1, 1))
-    intro_sound.play()
-    pygame.display.update()
-    time.sleep(4.4)
-    window.blit(intro1, (1, 1))
-    pygame.display.update()
-    time.sleep(2.4)
-    window.blit(intro2, (1, 1))
-    pygame.display.update()
-    time.sleep(4.6)
-    window.blit(intro3, (1, 1))
-    pygame.display.update()
-    time.sleep(4)
-    window.blit(menu, (1, 1))
-    pygame.display.update()
-    waiting = True
-    # game was started when player press space
-    while waiting:
-        play_sound(intro_sound)
-        for _ in pygame.event.get():
-            keys = pygame.key.get_pressed()
-            if keys[pygame.K_SPACE]:
-                waiting = False
-                stop_sound(intro_sound)
+    pass
+    # # shows all intro slaids and play intro music refresh screen beetween intro slaids
+    # window.blit(olchastudio, (1, 1))
+    # intro_sound.play()
+    # pygame.display.update()
+    # time.sleep(4.4)
+    # window.blit(intro1, (1, 1))
+    # pygame.display.update()
+    # time.sleep(2.4)
+    # window.blit(intro2, (1, 1))
+    # pygame.display.update()
+    # time.sleep(4.6)
+    # window.blit(intro3, (1, 1))
+    # pygame.display.update()
+    # time.sleep(4)
+    # window.blit(menu, (1, 1))
+    # pygame.display.update()
+    # waiting = True
+    # # game was started when player press space
+    # while waiting:
+    #     play_sound(intro_sound)
+    #     for _ in pygame.event.get():
+    #         keys = pygame.key.get_pressed()
+    #         if keys[pygame.K_SPACE]:
+    #             waiting = False
+    #             stop_sound(intro_sound)
 
 
 # deadscreen
@@ -801,8 +819,8 @@ def deadscreen(  # noqa: PLR0915, PLR0913
         gold_counter,
         best_score,
     )
-    verification.update_best_score(username)
-    verification.update_stats(username)
+    #verification.update_best_score(username)
+    #verification.update_stats(username)
     pygame.display.update()
     # when player press space stop showing scores and go into menu
     while waiting:  # noqa: RET503
@@ -1013,22 +1031,24 @@ def reeload(magazine: int, points_counter: int) -> int:
     time.sleep(1)
     return magazine, points_counter
 
-
 # border class
-class Border:
+class Border(Object):
     def __init__(  # noqa: PLR0913
         self,
         x: int,
         y: int,
         width: int,
         height: int,
-        color: Any = (255, 0, 0),
+        color: tuple[int,int,int] = (255, 0, 0),
     ) -> None:
-        self.rect = pygame.Rect(x, y, width, height)
+        super().__init__(x, y, width, height)
         self.color = color
 
     def draw(self, surface: pygame.Surface) -> None:
         pygame.draw.rect(surface, self.color, self.rect)
+
+    def delete(self)->None:
+        pass
 
 
 # add borders to border list
@@ -1052,11 +1072,11 @@ borders_list, right = borders(borders_list)
 
 
 # obstacle class
-class Obstacle:
+class Obstacle(Object):
     def __init__(  # noqa: PLR0913
         self, x: int, y: int, width: int, height: int, texture: Any
     ) -> None:
-        self.rect = pygame.Rect(x, y, width, height)
+        super().__init__(x, y, width, height)
         self.texture = texture
         self.mask = pygame.mask.from_surface(texture)
 
@@ -1131,7 +1151,7 @@ obstacles_list = obstacles(obstacles_list)
 
 
 # enemy class
-class Enemy:
+class Enemy(Object):
     def __init__(  # noqa: PLR0913
         self,
         x: int,
@@ -1143,7 +1163,7 @@ class Enemy:
         collision: Any,
         enemy_type: str,
     ) -> None:
-        self.rect = pygame.Rect(x, y, width, height)
+        super().__init__(x, y, width, height)
         self.texture = texture
         self.speed = speed
         self.collision = collision
@@ -1151,8 +1171,6 @@ class Enemy:
         self.type = enemy_type
         self.mask = pygame.mask.from_surface(texture)
         self.prev_pos = self.rect.copy()
-        self.x = self.rect.x
-        self.y = self.rect.y
 
     """enemies colliderete with obstacles and borders
     (ghost dont colliderect with obstacles) when the enemy touch
@@ -1163,6 +1181,9 @@ class Enemy:
         self.x, self.y = self.rect.x, self.rect.y
         self.rect.x += self.speed * self.direction[0]
         self.rect.y += self.speed * self.direction[1]
+
+        if random.random() < 0.05:  # noqa: S311
+            self.change_direction()
 
         for obstacles in obstacles_list:
             if self.type == "ghost":
@@ -1176,8 +1197,7 @@ class Enemy:
                 self.rect = self.prev_pos
                 break
 
-        if random.random() < 0.05:  # noqa: S311
-            self.change_direction()
+
 
     # enemies are moving randomly
     def change_direction(self) -> None:
@@ -1299,25 +1319,21 @@ enemy_list = enemies()
 
 
 # bullet class
-class Bullet:
+class Bullet(Object):
     def __init__(  # noqa: PLR0913
         self,
         x: int,
         y: int,
         speed: int,
-        bullet_width: int,
-        bullet_height: int,
+        width: int,
+        height: int,
         direction: Any,
         texture: Any,
     ) -> None:
-        self.x = x
-        self.y = y
+        super().__init__(x,y,width,height)
         self.speed = speed
         self.direction = direction
         self.texture = texture
-        self.bullet_height = bullet_height
-        self.bullet_width = bullet_width
-        self.rect = pygame.Rect(x, y, bullet_width, bullet_height)
 
     # changes the texture according to the direction of the bullet
     def update(self) -> None:
@@ -1342,7 +1358,7 @@ class Bullet:
 
 
 # boss class
-class Boss:
+class Boss(Enemy):
     def __init__(  # noqa: PLR0913
         self,
         x: int,
@@ -1353,15 +1369,12 @@ class Boss:
         speed: int,
         collision: Any,
     ) -> None:
-        self.rect = pygame.Rect(x, y, width, height)
-        self.texture = texture
-        self.speed = speed
-        self.collision = collision
+        super().__init__(x, y, width, height,texture,speed,collision,enemy_type=None)
         self.direction = (1, 0)
         self.mask = pygame.mask.from_surface(texture)
         self.prev_pos = self.rect.copy()
-        self.x = self.rect.x
-        self.y = self.rect.y
+        self.change_direction = self.change_direction
+        self.draw = self.draw
 
     def update(self) -> None:
         self.prev_pos = self.rect.copy()
@@ -1369,25 +1382,19 @@ class Boss:
         self.rect.x += self.speed * self.direction[0]
         self.rect.y += self.speed * self.direction[1]
 
+        if random.random() < 0.05:  # noqa: S311
+            self.change_direction()
+
         for borders in borders_list:
             if self.rect.colliderect(borders.rect):
                 self.rect = self.prev_pos
                 break
         # enemy colliderect with boss
         for enemies in enemy_list:
-            offset = (self.rect.x - enemies.x, self.rect.y - enemies.y)
+            offset = (self.rect.x - enemies.rect.x, self.rect.y - enemies.rect.y)
             if enemies.mask.overlap(mask, offset):
                 enemies.rect = enemies.prev_pos
 
-        if random.random() < 0.05:  # noqa: S311
-            self.change_direction()
-
-    def change_direction(self) -> None:
-        directions = [(1, 0), (-1, 0), (0, 1), (0, -1)]
-        new_direction = self.direction
-        while new_direction == self.direction:
-            new_direction = random.choice(directions)  # noqa: S311
-        self.direction = new_direction
 
     def draw(self, surface: pygame.Surface) -> None:
         surface.blit(self.texture, self.rect)
@@ -1540,7 +1547,7 @@ def stats(  # noqa: PLR0913
     mutants_killed: int,
     ghosts_killed: int,
     gold_counter: int,
-    best_score:int,
+    best_score: int,
 ) -> None:
     file_path = Path(f"client/game/stats/{username}/stats.json")
     with file_path.open(mode="r") as f:
@@ -1581,7 +1588,7 @@ def stats(  # noqa: PLR0913
         mutants_killed,
         ghosts_killed,
         gold_counter,
-        best_score
+        best_score,
     )
 
 

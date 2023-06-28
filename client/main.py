@@ -11,6 +11,7 @@ width = 1920
 height = 1080
 bright = 0
 
+
 # playin background music
 def play_background_music() -> None:
     pygame.mixer.music.load("client/client_sounds/darkforest_client.mp3")
