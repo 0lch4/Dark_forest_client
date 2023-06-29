@@ -61,7 +61,7 @@ y = 0
 points_counter = 0
 best_score = 0
 # level
-level = 49
+level = 0
 # number of enemies when game started
 number_devils = 0
 number_fasts = 0
@@ -72,7 +72,7 @@ number_obstacles = 8
 # max number of obstacles
 max_obstacles = 18
 # bullets in magazine
-magazine = 100
+magazine = 0
 # glag for gun hide/pick
 gun_on = False
 # basic player speed
