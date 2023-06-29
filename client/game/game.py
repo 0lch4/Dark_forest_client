@@ -61,7 +61,7 @@ y = 0
 points_counter = 0
 best_score = 0
 # level
-level = 0
+level = 49
 # number of enemies when game started
 number_devils = 0
 number_fasts = 0
@@ -72,7 +72,7 @@ number_obstacles = 8
 # max number of obstacles
 max_obstacles = 18
 # bullets in magazine
-magazine = 0
+magazine = 100
 # glag for gun hide/pick
 gun_on = False
 # basic player speed
@@ -173,19 +173,12 @@ def brightness(image: Any, value: int) -> Any:
     return image
 
 
-# change background brightnes with users parameters
-background1 = brightness(background1, bright)
-background2 = brightness(background2, bright)
-background3 = brightness(background3, bright)
-background4 = brightness(background4, bright)
-background5 = brightness(background5, bright)
-
-# scaling background textures
-background1 = pygame.transform.scale(background1, window.get_size())
-background2 = pygame.transform.scale(background2, window.get_size())
-background3 = pygame.transform.scale(background3, window.get_size())
-background4 = pygame.transform.scale(background4, window.get_size())
-background5 = pygame.transform.scale(background5, window.get_size())
+# scaling background textures and set brightness
+background1 = pygame.transform.scale(brightness(background1, bright), window.get_size())
+background2 = pygame.transform.scale(brightness(background2, bright), window.get_size())
+background3 = pygame.transform.scale(brightness(background3, bright), window.get_size())
+background4 = pygame.transform.scale(brightness(background4, bright), window.get_size())
+background5 = pygame.transform.scale(brightness(background5, bright), window.get_size())
 
 
 # list of background textures
@@ -1330,6 +1323,66 @@ class Bullet(Object):
         bullets_list.remove(self)
         del self
 
+#creates bullets
+def bullets(bullets_list: list[pygame.Rect], magazine: int) -> list[pygame.Rect]:
+    if bullet_direction == "right":
+        new_bullet = Bullet(
+            player1_rect.x,
+            player1_rect.y,
+            bullet_speed,
+            bullet_width,
+            bullet_height,
+            bullet_direction,
+            bullet_texture_right,
+        )
+        bullets_list.append(new_bullet)
+        magazine -= 1
+        gun_sound.play()
+
+    if bullet_direction == "left":
+        new_bullet = Bullet(
+            player1_rect.x,
+            player1_rect.y,
+            bullet_speed,
+            bullet_width,
+            bullet_height,
+            bullet_direction,
+            bullet_textureL,
+        )
+        bullets_list.append(new_bullet)
+        magazine -= 1
+        gun_sound.play()
+
+    if bullet_direction == "top":
+        new_bullet = Bullet(
+            player1_rect.x,
+            player1_rect.y,
+            bullet_speed,
+            bullet2_width,
+            bullet2_height,
+            bullet_direction,
+            bullet_textureT,
+        )
+        bullets_list.append(new_bullet)
+        magazine -= 1
+        gun_sound.play()
+
+    if bullet_direction == "down":
+        new_bullet = Bullet(
+            player1_rect.x,
+            player1_rect.y,
+            bullet_speed,
+            bullet2_width,
+            bullet2_height,
+            bullet_direction,
+            bullet_textureD,
+        )
+        bullets_list.append(new_bullet)
+        magazine -= 1
+        gun_sound.play()
+
+    return bullets_list,magazine
+
 
 # boss class
 class Boss(Enemy):
@@ -1371,9 +1424,6 @@ class Boss(Enemy):
             if enemies.mask.overlap(mask, offset):
                 enemies.rect = enemies.prev_pos
 
-    def draw(self, surface: pygame.Surface) -> None:
-        surface.blit(self.texture, self.rect)
-
     def delete(self) -> None:
         boss_list.remove(self)
         dead_boss_list.append(self)
@@ -1386,6 +1436,16 @@ def boss(boss_list: list, bs: Any) -> list[Any]:
     boss_list.append(boss)
     bs = True
     return boss_list, bs
+
+#spawning enemies on boss level
+def boss_level_enemies(boss_hp: int, enemy_list: list[pygame.Rect]) -> int:
+    spawns = (40, 30, 20, 10)
+    if boss_hp in spawns:
+        enemy_list = generate_new_enemy()
+        boss_hp -= 1
+        for enemy in enemy_list:
+            death_animation(devil_dead_animation, enemy.rect.x, enemy.rect.y)
+    return boss_hp, enemy_list
 
 
 # creating gold in map and modify levels
@@ -1458,7 +1518,7 @@ def generate_new_enemy() -> list[Any]:
 
 
 # load death animation
-def death_animation(death_frames: list[Any], x: int, y: int) -> None:
+def death_animation(death_frames: list[pygame.Rect], x: int, y: int) -> None:
     for frames in death_frames:
         window.blit(frames, (x, y))
         pygame.time.wait(50)
@@ -1892,61 +1952,7 @@ while run:
         and magazine > 0
         and gun_on is True
     ):
-        if bullet_direction == "right":
-            new_bullet = Bullet(
-                player1_rect.x,
-                player1_rect.y,
-                bullet_speed,
-                bullet_width,
-                bullet_height,
-                bullet_direction,
-                bullet_texture_right,
-            )
-            bullets_list.append(new_bullet)
-            magazine -= 1
-            gun_sound.play()
-
-        elif bullet_direction == "left":
-            new_bullet = Bullet(
-                player1_rect.x,
-                player1_rect.y,
-                bullet_speed,
-                bullet_width,
-                bullet_height,
-                bullet_direction,
-                bullet_textureL,
-            )
-            bullets_list.append(new_bullet)
-            magazine -= 1
-            gun_sound.play()
-
-        elif bullet_direction == "top":
-            new_bullet = Bullet(
-                player1_rect.x,
-                player1_rect.y,
-                bullet_speed,
-                bullet2_width,
-                bullet2_height,
-                bullet_direction,
-                bullet_textureT,
-            )
-            bullets_list.append(new_bullet)
-            magazine -= 1
-            gun_sound.play()
-
-        elif bullet_direction == "down":
-            new_bullet = Bullet(
-                player1_rect.x,
-                player1_rect.y,
-                bullet_speed,
-                bullet2_width,
-                bullet2_height,
-                bullet_direction,
-                bullet_textureD,
-            )
-            bullets_list.append(new_bullet)
-            magazine -= 1
-            gun_sound.play()
+        bullets_list,magazine = bullets(bullets_list,magazine)
 
     # loading enemies on the map
     for enemy in enemy_list:
@@ -2121,29 +2127,7 @@ while run:
             pass
 
     # generate new enemies when boss hp run below static values
-    if boss_hp == 40:
-        enemy_list = generate_new_enemy()
-        boss_hp = 39
-        for enemy in enemy_list:
-            death_animation(devil_dead_animation, enemy.rect.x, enemy.rect.y)
-
-    if boss_hp == 30:
-        enemy_list = generate_new_enemy()
-        boss_hp = 29
-        for enemy in enemy_list:
-            death_animation(devil_dead_animation, enemy.rect.x, enemy.rect.y)
-
-    if boss_hp == 20:
-        enemy_list = generate_new_enemy()
-        boss_hp = 19
-        for enemy in enemy_list:
-            death_animation(devil_dead_animation, enemy.rect.x, enemy.rect.y)
-
-    if boss_hp == 10:
-        enemy_list = generate_new_enemy()
-        boss_hp = 9
-        for enemy in enemy_list:
-            death_animation(devil_dead_animation, enemy.rect.x, enemy.rect.y)
+    boss_hp, enemy_list = boss_level_enemies(boss_hp, enemy_list)
 
     # update the screen
     pygame.display.update()
